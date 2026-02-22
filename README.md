@@ -1,2 +1,2 @@
-# EC360-A1-405339
-Software Engineering Assignment 1
+# EC360-Project
+Software Engineering Semester Project
