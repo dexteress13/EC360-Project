@@ -14,6 +14,8 @@ const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 const reviewerRoutes = require('./routes/reviewer');
 app.use('/api/reviewer', reviewerRoutes);
+const paperRoutes = require('./routes/paper');
+app.use('/api/paper', paperRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
