@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Signup from "./pages/Signup";
 import Login from "./pages/Login";
 import ReviewerProfile from "./pages/ReviewerProfile";
+import SubmitPaper from "./pages/SubmitPaper";
 
 export default function App() {
   return (
@@ -11,6 +12,7 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reviewer-profile" element={<ReviewerProfile />} />
+        <Route path="/submit-paper" element={<SubmitPaper />} />
       </Routes>
     </BrowserRouter>
   );
