@@ -30,10 +30,16 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage("Login successful! Redirecting...");
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        setTimeout(() => navigate("/dashboard"), 2000);
+
+        setMessage(
+          data.user.role === "editor"
+            ? "Welcome Editor! Redirecting..."
+            : "Login successful! Redirecting..."
+        );
+
+        setTimeout(() => navigate("/dashboard"), 1500);
       }
     } catch (err) {
       setError("Server error. Please try again.");
@@ -84,7 +90,7 @@ export default function Login() {
         </form>
 
         <p style={styles.link}>
-          Don't have an account? <Link to="/signup">Sign up here</Link>
+          Don't have an account? <Link to="/signup">Sign up as Author</Link>
         </p>
       </div>
     </div>
