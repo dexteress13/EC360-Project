@@ -44,7 +44,7 @@ export default function Signup() {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Create your author account</p>
+        <p style={styles.subtitle}>Create your Author account</p>
 
         {message && <p style={styles.success}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -90,7 +90,7 @@ export default function Signup() {
           </div>
 
           <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Sign Up"}
+            {loading ? "Registering..." : "Sign Up as Author"}
           </button>
         </form>
 

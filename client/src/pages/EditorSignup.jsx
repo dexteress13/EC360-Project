@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
-export default function Login() {
+export default function EditorSignup() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function Login() {
     setMessage("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/auth/register-editor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -30,16 +30,8 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        setMessage(
-          data.user.role === "editor"
-            ? "Welcome Editor! Redirecting..."
-            : "Login successful! Redirecting..."
-        );
-
-        setTimeout(() => navigate("/dashboard"), 1500);
+        setMessage("Editor registered! Redirecting to login...");
+        setTimeout(() => navigate("/login"), 2000);
       }
     } catch (err) {
       setError("Server error. Please try again.");
@@ -52,12 +44,24 @@ export default function Login() {
     <div style={styles.container}>
       <div style={styles.card}>
         <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Login to your account</p>
+        <p style={styles.subtitle}>Create Editor Account</p>
 
         {message && <p style={styles.success}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Full Name</label>
+            <input
+              style={styles.input}
+              type="text"
+              name="name"
+              placeholder="Enter your name"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
           <div style={styles.inputGroup}>
             <label style={styles.label}>Email</label>
             <input
@@ -70,7 +74,6 @@ export default function Login() {
               required
             />
           </div>
-
           <div style={styles.inputGroup}>
             <label style={styles.label}>Password</label>
             <input
@@ -83,14 +86,16 @@ export default function Login() {
               required
             />
           </div>
-
           <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Registering..." : "Register as Editor"}
           </button>
         </form>
 
         <p style={styles.link}>
-          Don't have an account? <Link to="/signup">Sign up as Author</Link>
+          Already have an account? <Link to="/login">Login here</Link>
+        </p>
+        <p style={styles.link}>
+          Are you an author? <Link to="/signup">Author Signup</Link>
         </p>
       </div>
     </div>
@@ -117,7 +122,7 @@ const styles = {
     textAlign: "center",
     fontSize: "28px",
     fontWeight: "700",
-    color: "#1a73e8",
+    color: "#0f9d58",
     marginBottom: "4px",
   },
   subtitle: {
@@ -146,7 +151,7 @@ const styles = {
   button: {
     width: "100%",
     padding: "12px",
-    backgroundColor: "#1a73e8",
+    backgroundColor: "#0f9d58",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
@@ -173,7 +178,7 @@ const styles = {
   },
   link: {
     textAlign: "center",
-    marginTop: "16px",
+    marginTop: "12px",
     fontSize: "13px",
     color: "#666",
   },
