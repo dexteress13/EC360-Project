@@ -12,6 +12,8 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+const reviewerRoutes = require('./routes/reviewer');
+app.use('/api/reviewer', reviewerRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
