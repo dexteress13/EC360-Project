@@ -17,6 +17,7 @@ app.use('/api/reviewer', reviewerRoutes);
 const paperRoutes = require('./routes/paper');
 app.use('/api/paper', paperRoutes);
 const assignmentRoutes = require('./routes/assignment');
+app.use('/uploads', express.static(require('path').join(__dirname, 'uploads')));
 app.use('/api/assignment', assignmentRoutes);
 
 // MongoDB connection
