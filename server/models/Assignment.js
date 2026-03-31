@@ -10,6 +10,14 @@ const assignmentSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  paperFilePath: {
+    type: String,
+    required: true
+  },
+  paperFileName: {
+    type: String,
+    required: true
+  },
   reviewerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Reviewer',

@@ -69,6 +69,8 @@ router.post('/assign/:paperId', async (req, res) => {
     const assignment = new Assignment({
       paperId: paper._id,
       paperTitle: paper.title,
+      paperFilePath: paper.filePath,
+      paperFileName: paper.fileName,
       reviewerId: bestMatch._id,
       reviewerName: bestMatch.name,
       reviewerEmail: bestMatch.email,
@@ -92,6 +94,20 @@ router.post('/assign/:paperId', async (req, res) => {
 router.get('/all', async (req, res) => {
   try {
     const assignments = await Assignment.find();
+    res.status(200).json(assignments);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// GET ASSIGNMENTS FOR REVIEWER
+router.get('/reviewer/:reviewerEmail', async (req, res) => {
+  try {
+    const { reviewerEmail } = req.params;
+    const assignments = await Assignment.find({ reviewerEmail: reviewerEmail.toLowerCase() }).sort({ createdAt: -1 });
+    if (!assignments.length) {
+      return res.status(404).json({ message: 'No assignments found for this reviewer' });
+    }
     res.status(200).json(assignments);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

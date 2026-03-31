@@ -23,13 +23,6 @@ export default function Dashboard() {
 
   const editorCards = [
     {
-      title: "Create Reviewer Profile",
-      description: "Add a new reviewer with their expertise keywords",
-      path: "/reviewer-profile",
-      color: "#0f9d58",
-      icon: "👤",
-    },
-    {
       title: "Assign Reviewer",
       description: "Automatically assign reviewers to papers based on expertise",
       path: "/assignment",
@@ -38,8 +31,34 @@ export default function Dashboard() {
     },
   ];
 
-  const cards = role === "editor" ? editorCards : authorCards;
+  const reviewerCards = [
+    {
+      title: "Assigned Papers",
+      description: "View papers assigned to you",
+      path: "/assigned-papers",
+      color: "#34a853",
+      icon: "📝",
+    },
+    {
+      title: "Update Profile",
+      description: "Manage your expertise keywords",
+      path: "/update-profile",
+      color: "#ea4335",
+      icon: "⚙️",
+    },
+  ];
 
+  let cards = [];
+
+  if (role === "editor") {
+    cards = editorCards;
+  } else if (role === "author") {
+    cards = authorCards;
+  } else if (role === "reviewer") {
+    cards = reviewerCards;
+  } else if (role === "admin") {
+    cards = [...editorCards, ...reviewerCards];
+  }
   return (
     <div style={styles.container}>
       {/* Navbar */}
@@ -47,7 +66,7 @@ export default function Dashboard() {
         <h1 style={styles.navTitle}>RevMatch</h1>
         <div style={styles.navRight}>
           <span style={styles.roleBadge(role)}>
-            {role === "editor" ? "Editor" : "Author"}
+            {role ? role.charAt(0).toUpperCase() + role.slice(1) : "User"}
           </span>
           <span style={styles.welcome}>
             Welcome, {user.name || "User"}
@@ -101,105 +120,137 @@ export default function Dashboard() {
 const styles = {
   container: {
     minHeight: "100vh",
-    backgroundColor: "#f0f2f5",
+    background: "linear-gradient(135deg, #1a73e8 0%, #1565c0 100%)",
+    padding: "20px",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
   navbar: {
-    backgroundColor: "#fff",
-    padding: "16px 32px",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    padding: "20px 40px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+    borderRadius: "15px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+    backdropFilter: "blur(10px)",
+    marginBottom: "30px",
   },
   navTitle: {
-    fontSize: "22px",
-    fontWeight: "700",
-    color: "#1a73e8",
+    fontSize: "28px",
+    fontWeight: "800",
+    background: "linear-gradient(45deg, #1a73e8, #1565c0)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
     margin: 0,
   },
   navRight: {
     display: "flex",
     alignItems: "center",
-    gap: "16px",
+    gap: "20px",
   },
   roleBadge: (role) => ({
-    padding: "4px 10px",
-    borderRadius: "20px",
-    fontSize: "12px",
-    fontWeight: "600",
-    backgroundColor: role === "editor" ? "#e6f4ea" : "#e8f0fe",
-    color: role === "editor" ? "#0f9d58" : "#1a73e8",
+    padding: "8px 16px",
+    borderRadius: "25px",
+    fontSize: "14px",
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    backgroundColor: role === "editor" ? "#e8f5e8" : "#e3f2fd",
+    color: role === "editor" ? "#2e7d32" : "#1565c0",
+    border: `2px solid ${role === "editor" ? "#4caf50" : "#2196f3"}`,
   }),
   welcome: {
-    fontSize: "14px",
+    fontSize: "16px",
     color: "#555",
+    fontWeight: "500",
   },
   logoutBtn: {
-    padding: "8px 16px",
-    backgroundColor: "#fff",
-    color: "#d93025",
-    border: "1px solid #d93025",
-    borderRadius: "6px",
-    fontSize: "13px",
-    fontWeight: "500",
+    padding: "10px 20px",
+    backgroundColor: "#f44336",
+    color: "#fff",
+    border: "none",
+    borderRadius: "25px",
+    fontSize: "14px",
+    fontWeight: "600",
     cursor: "pointer",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 15px rgba(244, 67, 54, 0.3)",
   },
   main: {
-    padding: "40px 32px",
-    maxWidth: "900px",
+    maxWidth: "1200px",
     margin: "0 auto",
+    padding: "40px",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    borderRadius: "20px",
+    boxShadow: "0 15px 35px rgba(0,0,0,0.1)",
+    backdropFilter: "blur(10px)",
   },
   heading: {
-    fontSize: "26px",
-    fontWeight: "700",
-    color: "#202124",
-    marginBottom: "4px",
+    fontSize: "32px",
+    fontWeight: "800",
+    color: "#333",
+    marginBottom: "8px",
+    textAlign: "center",
+    background: "linear-gradient(45deg, #1a73e8, #1565c0)",
+    WebkitBackgroundClip: "text",
+    WebkitTextFillColor: "transparent",
   },
   subheading: {
-    fontSize: "14px",
+    fontSize: "18px",
     color: "#666",
-    marginBottom: "32px",
+    marginBottom: "40px",
+    textAlign: "center",
+    fontWeight: "400",
   },
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "24px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "30px",
   },
   card: {
     backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "28px 24px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+    borderRadius: "15px",
+    padding: "30px 25px",
+    boxShadow: "0 8px 25px rgba(0,0,0,0.1)",
     cursor: "pointer",
-    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    transition: "all 0.3s ease",
+    border: "1px solid #e0e0e0",
+    position: "relative",
+    overflow: "hidden",
   },
   iconBox: {
-    width: "52px",
-    height: "52px",
-    borderRadius: "12px",
+    width: "60px",
+    height: "60px",
+    borderRadius: "15px",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: "16px",
+    marginBottom: "20px",
+    boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
   },
-  icon: { fontSize: "24px" },
+  icon: { fontSize: "28px" },
   cardTitle: {
-    fontSize: "16px",
-    fontWeight: "600",
-    marginBottom: "8px",
+    fontSize: "20px",
+    fontWeight: "700",
+    marginBottom: "10px",
+    color: "#333",
   },
   cardDesc: {
-    fontSize: "13px",
+    fontSize: "15px",
     color: "#666",
-    lineHeight: "1.5",
-    marginBottom: "20px",
+    lineHeight: "1.6",
+    marginBottom: "25px",
   },
   cardBtn: {
     display: "inline-block",
-    padding: "8px 16px",
+    padding: "12px 24px",
     color: "#fff",
-    borderRadius: "6px",
-    fontSize: "13px",
-    fontWeight: "500",
+    borderRadius: "25px",
+    fontSize: "14px",
+    fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    transition: "all 0.3s ease",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
   },
 };
