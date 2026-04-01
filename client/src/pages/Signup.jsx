@@ -39,8 +39,12 @@ export default function Signup() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage("Signup successful! Redirecting...");
-        setTimeout(() => navigate("/login"), 1500);
+        // Store user data like in Login.jsx
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        
+        setMessage("Account created and logged in! Redirecting to dashboard...");
+        setTimeout(() => navigate("/dashboard"), 1500);
       }
     } catch {
       setError("Server error. Please try again.");

@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
   role: {
     type: String,
     default: 'author'
+  },
+  expertise: {
+    type: [String],
+    default: []
   }
 }, { timestamps: true });
 

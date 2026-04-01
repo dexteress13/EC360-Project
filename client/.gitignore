@@ -1,4 +1,6 @@
+# =========================
 # Logs
+# =========================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +9,68 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# =========================
+# Node modules
+# =========================
+node_modules/
+
+# =========================
+# Build folders
+# =========================
+dist/
+dist-ssr/
+build/
+
+# =========================
+# Environment variables (IMPORTANT)
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Local development files
+# =========================
 *.local
 
-# Editor directories and files
+# =========================
+# Uploads (VERY IMPORTANT for your project)
+# =========================
+server/uploads/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Editor / IDE
+# =========================
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# =========================
+# Cache / temp
+# =========================
+.cache/
+.tmp/
+.temp/
+
+# =========================
+# Optional: coverage reports
+# =========================
+coverage/
+
+# =========================
+# Optional: lock files (keep if needed)
+# =========================
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

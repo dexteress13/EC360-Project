@@ -1,28 +1,28 @@
 const express = require('express');
 const router = express.Router();
 const Reviewer = require('../models/Reviewer');
+const authMiddleware = require('../middleware/auth');
+const User = require('../models/User');
 
-// CREATE REVIEWER PROFILE
-router.post('/create', async (req, res) => {
+// UPDATE REVIEWER EXPERTISE (self)
+router.put('/expertise', authMiddleware, async (req, res) => {
   try {
-    const { name, email, expertise } = req.body;
-
-    // Validate fields
-    if (!name || !email || !expertise || expertise.length === 0) {
-      return res.status(400).json({ message: 'All fields are required' });
+    const user = req.user;
+    
+    if (user.role !== 'reviewer') {
+      return res.status(403).json({ message: 'Only reviewers can update expertise' });
     }
 
-    // Check if reviewer already exists
-    const existing = await Reviewer.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ message: 'Reviewer with this email already exists' });
+    const { expertise } = req.body;
+    if (!expertise || !Array.isArray(expertise) || expertise.length === 0) {
+      return res.status(400).json({ message: 'Expertise array required' });
     }
 
-    // Save reviewer
-    const reviewer = new Reviewer({ name, email, expertise });
-    await reviewer.save();
+    // Update user expertise
+    user.expertise = expertise;
+    await user.save();
 
-    res.status(201).json({ message: 'Reviewer profile created successfully', reviewer });
+    res.status(200).json({ message: 'Expertise updated successfully', expertise: user.expertise });
 
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
