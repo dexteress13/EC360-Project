@@ -23,12 +23,6 @@ export default function Dashboard() {
 
   const editorCards = [
     {
-      title: "Create Reviewer Profile",
-      path: "/reviewer-profile",
-      description: "Add new expert reviewers to the system",
-      icon: "👤",
-    },
-    {
       title: "Assign Reviewer",
       path: "/assignment",
       description: "Automatically match papers with best reviewers",
@@ -38,10 +32,10 @@ export default function Dashboard() {
 
   const reviewerCards = [
     {
-      title: "My Assigned Papers",
-      path: "/assignment",
-      description: "View and manage your assigned papers",
-      icon: "📚",
+      title: "Manage Expertise",
+      path: "/reviewer-dashboard",
+      description: "Add/update your review expertise keywords",
+      icon: "⭐",
     },
   ];
 
