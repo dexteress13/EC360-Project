@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Paper = require('../models/Paper');
-const Reviewer = require('../models/Reviewer');
+const User = require('../models/User');
 const Assignment = require('../models/Assignment');
 
 // MATCHING ALGORITHM
@@ -43,8 +43,8 @@ router.post('/assign/:paperId', async (req, res) => {
       return res.status(404).json({ message: 'Paper not found' });
     }
 
-    // Get all reviewers
-    const reviewers = await Reviewer.find();
+    // Get all reviewer users
+    const reviewers = await User.find({ role: 'reviewer' });
     if (reviewers.length === 0) {
       return res.status(404).json({ message: 'No reviewers found in database' });
     }
@@ -109,3 +109,4 @@ router.get('/papers', async (req, res) => {
 });
 
 module.exports = router;
+
