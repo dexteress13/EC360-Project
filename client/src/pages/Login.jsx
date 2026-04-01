@@ -3,7 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "author",
+  });
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,10 +36,18 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage("Login successful! Redirecting...");
+        // ✅ Role validation
+        if (data.user.role !== formData.role) {
+          setError("Selected role does not match account");
+          setLoading(false);
+          return;
+        }
+
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        setTimeout(() => navigate("/dashboard"), 2000);
+
+        setMessage("Login successful! Redirecting...");
+        setTimeout(() => navigate("/dashboard"), 1000);
       }
     } catch (err) {
       setError("Server error. Please try again.");
@@ -53,29 +67,39 @@ export default function Login() {
 
         <form onSubmit={handleSubmit}>
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Email</label>
+            <label>Email</label>
             <input
               style={styles.input}
               type="email"
               name="email"
-              placeholder="Enter your email"
-              value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
           <div style={styles.inputGroup}>
-            <label style={styles.label}>Password</label>
+            <label>Password</label>
             <input
               style={styles.input}
               type="password"
               name="password"
-              placeholder="Enter your password"
-              value={formData.password}
               onChange={handleChange}
               required
             />
+          </div>
+
+          {/* ✅ NEW ROLE DROPDOWN */}
+          <div style={styles.inputGroup}>
+            <label>Select Role</label>
+            <select
+              style={styles.input}
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+            >
+              <option value="author">Author</option>
+              <option value="editor">Editor</option>
+            </select>
           </div>
 
           <button style={styles.button} type="submit" disabled={loading}>
@@ -84,7 +108,7 @@ export default function Login() {
         </form>
 
         <p style={styles.link}>
-          Don't have an account? <Link to="/signup">Sign up here</Link>
+          Don't have an account? <Link to="/signup">Sign up</Link>
         </p>
       </div>
     </div>
@@ -103,39 +127,17 @@ const styles = {
     backgroundColor: "#fff",
     padding: "40px",
     borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
     width: "100%",
     maxWidth: "420px",
   },
-  title: {
-    textAlign: "center",
-    fontSize: "28px",
-    fontWeight: "700",
-    color: "#1a73e8",
-    marginBottom: "4px",
-  },
-  subtitle: {
-    textAlign: "center",
-    color: "#666",
-    marginBottom: "24px",
-    fontSize: "14px",
-  },
-  inputGroup: { marginBottom: "16px" },
-  label: {
-    display: "block",
-    marginBottom: "6px",
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#333",
-  },
+  title: { textAlign: "center" },
+  subtitle: { textAlign: "center", marginBottom: "20px" },
+  inputGroup: { marginBottom: "15px" },
   input: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    fontSize: "14px",
-    outline: "none",
-    boxSizing: "border-box",
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
   },
   button: {
     width: "100%",
@@ -143,32 +145,9 @@ const styles = {
     backgroundColor: "#1a73e8",
     color: "#fff",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "15px",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "8px",
-  },
-  success: {
-    backgroundColor: "#e6f4ea",
-    color: "#2d7a3a",
-    padding: "10px",
     borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
   },
-  error: {
-    backgroundColor: "#fce8e6",
-    color: "#c5221f",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-  link: {
-    textAlign: "center",
-    marginTop: "16px",
-    fontSize: "13px",
-    color: "#666",
-  },
+  success: { color: "green" },
+  error: { color: "red" },
+  link: { textAlign: "center", marginTop: "10px" },
 };
