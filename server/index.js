@@ -12,6 +12,7 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+const authMiddleware = require('./middleware/auth');
 const reviewerRoutes = require('./routes/reviewer');
 app.use('/api/reviewer', reviewerRoutes);
 const paperRoutes = require('./routes/paper');
