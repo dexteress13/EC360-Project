@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import ReviewerDashboard from "./pages/ReviewerDashboard";
 import SubmitPaper from "./pages/SubmitPaper";
 import Assignment from "./pages/Assignment";
+import AuthorDashboard from "./pages/AuthorDashboard";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
 <Route path="/reviewer-dashboard" element={<ReviewerDashboard />} />
         <Route path="/submit-paper" element={<SubmitPaper />} />
         <Route path="/assignment" element={<Assignment />} />
+        <Route path="/author-dashboard" element={<AuthorDashboard />} />
       </Routes>
     </BrowserRouter>
   );
