@@ -1,16 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SubmitPaper() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     abstract: "",
     keywords: "",
-    submittedBy: "",
   });
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    } else if (user.role !== "author") {
+      navigate("/dashboard");
+    }
+  }, [token, user.role, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,11 +39,18 @@ export default function SubmitPaper() {
     setFile(selected);
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
     setMessage("");
+
+    if (!token) {
+      setError("Please login first");
+      navigate("/login");
+      setLoading(false);
+      return;
+    }
 
     if (!file) {
       setError("Please upload a PDF file");
@@ -43,30 +62,42 @@ export default function SubmitPaper() {
     data.append("title", formData.title);
     data.append("abstract", formData.abstract);
     data.append("keywords", formData.keywords);
-    data.append("submittedBy", formData.submittedBy);
+    // Remove submittedBy - backend will use req.user.id
     data.append("file", file);
 
     try {
       const res = await fetch("http://localhost:5000/api/paper/submit", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        },
         body: data,
       });
 
       const result = await res.json();
 
       if (!res.ok) {
-        setError(result.message);
+        console.error('Submit error:', result);
+        setError(result.message || 'Submission failed');
+        if (res.status === 401) {
+          setError('Session expired. Please login again.');
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          setTimeout(() => navigate("/login"), 2000);
+        }
       } else {
         setMessage("Paper submitted successfully!");
-        setFormData({ title: "", abstract: "", keywords: "", submittedBy: "" });
+        setFormData({ title: "", abstract: "", keywords: "" });
         setFile(null);
       }
     } catch (err) {
-      setError("Server error. Please try again.");
+      console.error('Submit network error:', err);
+      setError("Network error. Check if server is running.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div style={styles.container}>
@@ -78,18 +109,7 @@ export default function SubmitPaper() {
         {error && <p style={styles.error}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Author Email</label>
-            <input
-              style={styles.input}
-              type="email"
-              name="submittedBy"
-              placeholder="Your registered email"
-              value={formData.submittedBy}
-              onChange={handleChange}
-              required
-            />
-          </div>
+
 
           <div style={styles.inputGroup}>
             <label style={styles.label}>Paper Title</label>

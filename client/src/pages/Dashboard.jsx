@@ -19,6 +19,12 @@ export default function Dashboard() {
       description: "Upload your research paper for review assignment",
       icon: "📄",
     },
+    {
+      title: "View My Papers",
+      path: "/author-dashboard",
+      description: "Track the status of your submitted papers",
+      icon: "📋",
+    },
   ];
 
   const editorCards = [
