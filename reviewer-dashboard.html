@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard.css">
+    <title>Reviewer Dashboard</title>
+</head>
+<body>
+    <header>
+        <h1>Reviewer Dashboard</h1>
+    </header>
+    <main>
+        <section id="filter">
+            <label for="status">Filter by Status:</label>
+            <select id="status">
+                <option value="all">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+            </select>
+        </section>
+        <section id="papers">
+            <h2>Assigned Papers</h2>
+            <ul id="paper-list"></ul>
+        </section>
+    </main>
+    <script src="dashboard.js"></script>
+</body>
+</html>

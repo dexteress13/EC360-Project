@@ -2,14 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Paper = require('../models/Paper');
 const upload = require('../middleware/upload');
+const authenticateToken = require('../middleware/auth');
 
 // SUBMIT PAPER
-router.post('/submit', upload.single('file'), async (req, res) => {
+router.post('/submit', authenticateToken, upload.single('file'), async (req, res) => {
   try {
-    const { title, abstract, keywords, submittedBy } = req.body;
+    console.log('Paper submit attempt:', req.body.title, 'File:', req.file ? req.file.originalname : 'NO FILE');
+    console.log('User:', req.user ? req.user.id : 'NO USER');
+    const { title, abstract, keywords } = req.body;
 
     // Validate fields
-    if (!title || !abstract || !keywords || !submittedBy) {
+    if (!title || !abstract || !keywords) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
@@ -24,21 +27,22 @@ router.post('/submit', upload.single('file'), async (req, res) => {
       .map((k) => k.trim())
       .filter((k) => k !== '');
 
-    // Save paper
+    // Save paper - use authenticated user ID
     const paper = new Paper({
       title,
       abstract,
       keywords: keywordsArray,
       filePath: req.file.path,
       fileName: req.file.originalname,
-      submittedBy
+      submittedBy: req.user.id
     });
 
     await paper.save();
 
     res.status(201).json({ message: 'Paper submitted successfully', paper });
 
-  } catch (error) {
+    } catch (error) {
+    console.error('Paper submit error:', error);
     if (error.message === 'Only PDF files are allowed') {
       return res.status(400).json({ message: 'Only PDF files are allowed' });
     }
@@ -53,6 +57,26 @@ router.get('/all', async (req, res) => {
     res.status(200).json(papers);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
+// GET AUTHOR'S PAPERS
+router.get('/my', authenticateToken, async (req, res) => {
+  try {
+    const papers = await Paper.find({ submittedBy: req.user.id })
+      .select('_id title abstract authors submissionDate status fileName keywords')
+      .sort({ submissionDate: -1 });
+    res.json({
+      success: true,
+      papers,
+      count: papers.length
+    });
+  } catch (error) {
+    console.error('Error fetching author papers:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Failed to fetch papers'
+    });
   }
 });
 
