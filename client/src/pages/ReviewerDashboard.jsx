@@ -118,6 +118,17 @@ export default function ReviewerDashboard() {
                     {paper.deadline && (
                       <span>Deadline: {new Date(paper.deadline).toLocaleDateString()}</span>
                     )}
+                    {paper.filePath && (
+                      <button 
+                        style={styles.viewPdfButton}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open(`http://localhost:5000/${paper.filePath}`, "_blank");
+                        }}
+                      >
+                        📄 View Paper (PDF)
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -310,6 +321,18 @@ const styles = {
   status: {
     fontWeight: "500",
     color: "#28a745",
+  },
+  viewPdfButton: {
+    marginTop: "12px",
+    padding: "8px 16px",
+    backgroundColor: "#1a73e8",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "13px",
+    fontWeight: "600",
+    cursor: "pointer",
+    width: "fit-content",
   },
   loading: {
     textAlign: "center",
