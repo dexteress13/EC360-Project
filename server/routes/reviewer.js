@@ -53,7 +53,7 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
     // Fetch papers with title and abstract
     const papers = await Paper.find({ 
       _id: { $in: paperIds } 
-    }).select('_id title abstract authors submissionDate').lean();
+    }).select('_id title abstract authors submissionDate filePath').lean();
     
     // Combine with assignment info
     const reviewerPapers = papers.map(paper => {
