@@ -39,9 +39,15 @@ export default function Dashboard() {
   const reviewerCards = [
     {
       title: "Manage Expertise",
-      path: "/reviewer-dashboard",
-      description: "Add/update your review expertise keywords",
+      path: "/manage-expertise",
+      description: "Update your expertise keywords",
       icon: "⭐",
+    },
+    {
+      title: "Assigned Papers",
+      path: "/assigned-papers",
+      description: "View papers assigned to you",
+      icon: "📄",
     },
   ];
 
