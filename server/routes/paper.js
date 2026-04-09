@@ -34,7 +34,8 @@ router.post('/submit', authenticateToken, upload.single('file'), async (req, res
       keywords: keywordsArray,
       filePath: req.file.path,
       fileName: req.file.originalname,
-      submittedBy: req.user.id
+      submittedBy: req.user.id,
+      status: 'submitted'
     });
 
     await paper.save();
