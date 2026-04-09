@@ -8,9 +8,10 @@ const paperSchema = new mongoose.Schema({
   filePath: String,
   fileName: String,
   submittedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  content: String,
-  submissionDate: { type: Date, default: Date.now },
-  status: { type: String, enum: ['submitted', 'under_review', 'accepted', 'rejected'], default: 'submitted' }
+content: String,
+  status: { type: String, enum: ['submitted', 'under_review', 'reviewed', 'accepted', 'rejected'], default: 'submitted' },
+
+
 });
 
 module.exports = mongoose.model('Paper', paperSchema);
