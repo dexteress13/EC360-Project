@@ -4,6 +4,7 @@ export default function Assignment() {
   const [papers, setPapers] = useState([]);
   const [selectedPaper, setSelectedPaper] = useState("");
   const [result, setResult] = useState(null);
+  const [potentialMatches, setPotentialMatches] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,6 +16,18 @@ export default function Assignment() {
       .then((data) => setPapers(data))
       .catch(() => setError("Could not load papers"));
   }, []);
+
+  // Fetch matches when a paper is selected
+  useEffect(() => {
+    if (selectedPaper) {
+      fetch(`http://localhost:5000/api/assignment/potential-matches/${selectedPaper}`)
+        .then(res => res.json())
+        .then(data => setPotentialMatches(data))
+        .catch(() => setError("Failed to fetch reviewer matches"));
+    } else {
+      setPotentialMatches([]);
+    }
+  }, [selectedPaper]);
 
   const handleAssign = async () => {
     if (!selectedPaper) {
@@ -48,11 +61,38 @@ export default function Assignment() {
     }
   };
 
+  const handleManualAssign = async (reviewerId) => {
+    setLoading(true);
+    setError("");
+    setMessage("");
+    
+    try {
+      const res = await fetch("http://localhost:5000/api/assignment/assign-manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ paperId: selectedPaper, reviewerId })
+      });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message);
+      } else {
+        setMessage("Reviewer assigned successfully!");
+        setResult(data.assignment);
+        setPotentialMatches([]);
+      }
+    } catch (err) {
+      setError("Server error.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
+      <div style={{...styles.card, maxWidth: potentialMatches.length > 0 && !result ? "900px" : "480px"}}>
         <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Automated Reviewer Assignment</p>
+        <p style={styles.subtitle}>Reviewer Assignment Management</p>
 
         {message && <p style={styles.success}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -73,9 +113,42 @@ export default function Assignment() {
           </select>
         </div>
 
-        <button style={styles.button} onClick={handleAssign} disabled={loading}>
-          {loading ? "Assigning..." : "Assign Reviewer"}
-        </button>
+        {!result && selectedPaper && (
+          <button style={styles.button} onClick={handleAssign} disabled={loading}>
+            {loading ? "Assigning..." : "Auto-Assign Best Match"}
+          </button>
+        )}
+
+        {selectedPaper && potentialMatches.length > 0 && !result && (
+          <div style={styles.matchesSection}>
+            <h3 style={styles.resultTitle}>Potential Reviewers (by expertise match)</h3>
+            <div style={styles.matchesTable}>
+              <div style={styles.tableHeader}>
+                <span>Reviewer</span>
+                <span>Expertise</span>
+                <span>Match</span>
+                <span>Action</span>
+              </div>
+              {potentialMatches.map((match) => (
+                <div key={match._id} style={styles.tableRow}>
+                  <div style={styles.reviewerInfo}>
+                    <span style={styles.reviewerName}>{match.name}</span>
+                    <span style={styles.reviewerEmail}>{match.email}</span>
+                  </div>
+                  <span style={styles.expertiseText}>{match.expertise.join(", ")}</span>
+                  <span style={styles.scoreBadge}>{match.score} keyword(s)</span>
+                  <button 
+                    style={styles.smallAssignButton} 
+                    onClick={() => handleManualAssign(match._id)}
+                    disabled={loading}
+                  >
+                    Assign
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {result && (
           <div style={styles.resultCard}>
@@ -104,6 +177,12 @@ export default function Assignment() {
             </div>
           </div>
         )}
+        
+        {result && (
+           <button style={{...styles.button, backgroundColor: '#6c757d', marginTop: '20px'}} onClick={() => {setResult(null); setSelectedPaper("");}}>
+             Assign Another Paper
+           </button>
+        )}
       </div>
     </div>
   );
@@ -124,7 +203,7 @@ const styles = {
     borderRadius: "12px",
     boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
     width: "100%",
-    maxWidth: "480px",
+    transition: "max-width 0.3s ease",
   },
   title: {
     textAlign: "center",
@@ -212,5 +291,51 @@ const styles = {
   resultValue: {
     color: "#1a73e8",
     textAlign: "right",
+  },
+  matchesSection: {
+    marginTop: "30px",
+  },
+  matchesTable: {
+    border: "1px solid #eee",
+    borderRadius: "8px",
+    overflow: "hidden",
+  },
+  tableHeader: {
+    display: "grid",
+    gridTemplateColumns: "1.5fr 2fr 0.8fr 0.8fr",
+    padding: "12px",
+    backgroundColor: "#f1f3f4",
+    fontWeight: "600",
+    fontSize: "13px",
+  },
+  tableRow: {
+    display: "grid",
+    gridTemplateColumns: "1.5fr 2fr 0.8fr 0.8fr",
+    padding: "12px",
+    borderTop: "1px solid #eee",
+    alignItems: "center",
+    fontSize: "13px",
+  },
+  reviewerInfo: { display: "flex", flexDirection: "column" },
+  reviewerName: { fontWeight: "600" },
+  reviewerEmail: { fontSize: "11px", color: "#666" },
+  expertiseText: { color: "#555", fontStyle: "italic" },
+  scoreBadge: {
+    backgroundColor: "#e8f0fe",
+    color: "#1a73e8",
+    padding: "4px 8px",
+    borderRadius: "4px",
+    fontSize: "11px",
+    width: "fit-content",
+    fontWeight: "600"
+  },
+  smallAssignButton: {
+    padding: "6px 12px",
+    backgroundColor: "#1a73e8",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    fontSize: "12px",
+    cursor: "pointer",
   },
 };
