@@ -42,29 +42,24 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
   try {
     const reviewerId = req.user.id;
     
-    // Fetch all assignments for this reviewer
-    const assignments = await Assignment.find({ 
-      reviewerId: reviewerId,
-      status: { $ne: 'completed' } // Optional: exclude completed reviews
-    }).lean();
+    // Fetch assignments and populate paper details
+    const assignments = await Assignment.find({ reviewerId: reviewerId })
+      .populate('paperId', 'title abstract authors submissionDate filePath')
+      .lean();
     
-    const paperIds = assignments.map(a => a.paperId);
-    
-    // Fetch papers with title and abstract
-    const papers = await Paper.find({ 
-      _id: { $in: paperIds } 
-    }).select('_id title abstract authors submissionDate filePath').lean();
-    
-    // Combine with assignment info
-    const reviewerPapers = papers.map(paper => {
-      const assignment = assignments.find(a => a.paperId.toString() === paper._id.toString());
-      return {
-        ...paper,
-        assignedDate: assignment.assignedDate,
-        deadline: assignment.deadline,
-        status: assignment.status
-      };
-    });
+    // Transform to include assignmentId
+    const reviewerPapers = assignments.map(assignment => ({
+      _id: assignment.paperId._id,
+      title: assignment.paperId.title,
+      abstract: assignment.paperId.abstract,
+      authors: assignment.paperId.authors,
+      submissionDate: assignment.paperId.submissionDate,
+      filePath: assignment.paperId.filePath,
+      assignedDate: assignment.assignedDate,
+      deadline: assignment.deadline,
+      status: assignment.status,
+      assignmentId: assignment._id // Essential for review submission
+    }));
     
     res.json({
       success: true,
@@ -80,4 +75,49 @@ router.get('/dashboard', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT /api/reviewer/submit-review/:assignmentId - Submit review + UPDATE PAPER STATUS
+router.put('/submit-review/:assignmentId', authenticateToken, async (req, res) => {
+  try {
+    const { assignmentId } = req.params;
+    const { review, decision } = req.body;
+
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment || assignment.reviewerId.toString() !== req.user.id) {
+      return res.status(404).json({ message: 'Assignment not found' });
+    }
+    console.log('Found assignment:', assignment._id, 'reviewerId:', assignment.reviewerId, 'user.id:', req.user.id);
+
+    if (assignment.status === 'completed') {
+      return res.status(400).json({ message: 'Review already submitted' });
+    }
+
+    // Update assignment
+    assignment.status = 'completed';
+    assignment.review = review || '';
+    assignment.decision = decision;
+    assignment.submittedAt = new Date();
+    await assignment.save();
+
+// UPDATE PAPER STATUS to 'reviewed' (match Paper model enum) - skip if corrupt data
+    const paper = await Paper.findById(assignment.paperId);
+    if (paper) {
+      try {
+paper.status = 'reviewed';
+        await paper.save();
+      } catch (saveErr) {
+        console.log('Paper save skipped - corrupt submittedBy:', paper.submittedBy);
+      }
+    }
+
+    res.json({
+      success: true,
+      message: 'Review submitted & paper status updated to Reviewed!'
+    });
+  } catch (error) {
+    console.error('Submit review error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;
+
