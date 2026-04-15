@@ -13,7 +13,14 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'All fields including role are required' });
     }
 
-    const validRoles = ['author', 'editor', 'reviewer'];
+const validRoles = ['author', 'reviewer'];
+    if (role === 'admin') {
+      // Enforce single admin
+      const adminCount = await User.countDocuments({ role: 'admin' });
+      if (adminCount > 0) {
+        return res.status(400).json({ message: 'Admin already exists. Contact system administrator.' });
+      }
+    }
     if (!validRoles.includes(role)) {
       return res.status(400).json({ message: 'Invalid role selected' });
     }

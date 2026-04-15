@@ -19,9 +19,14 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
+    enum: ['author', 'reviewer', 'editor'],
     default: 'author'
   },
-  expertise: {
+  isPrimary: {
+    type: Boolean,
+    default: false
+  },
+expertise: {
     type: [String],
     default: []
   }

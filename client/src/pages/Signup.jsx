@@ -115,7 +115,6 @@ export default function Signup() {
               disabled={loading}
             >
               <option value="author">Author</option>
-              <option value="editor">Editor</option>
               <option value="reviewer">Reviewer</option>
             </select>
           </div>

@@ -9,11 +9,20 @@ export default function Assignment() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Load all papers on page load
+  const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/assignment/papers")
+    if (user.role !== "editor" && user.role !== "admin") {
+      navigate("/dashboard");
+      return;
+    }
+    // Load unassigned papers only for editors
+    fetch("http://localhost:5000/api/assignment/papers", {
+      headers: { "Authorization": `Bearer ${token}` }
+    })
       .then((res) => res.json())
-      .then((data) => setPapers(data))
+      .then((data) => setPapers(data.filter(p => p.status === 'submitted')))
       .catch(() => setError("Could not load papers"));
   }, []);
 

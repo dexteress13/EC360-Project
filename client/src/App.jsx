@@ -8,6 +8,8 @@ import Assignment from "./pages/Assignment";
 import AuthorDashboard from "./pages/AuthorDashboard";
 import ManageExpertise from "./pages/ManageExpertise";
 import AssignedPapers from "./pages/AssignedPapers";
+import EditorDashboard from "./pages/EditorDashboard";
+import AdminPaperDetails from "./pages/AdminPaperDetails";
 
 export default function App() {
   return (
@@ -25,7 +27,9 @@ export default function App() {
         <Route path="/assignment" element={<Assignment />} />
 <Route path="/author-dashboard" element={<AuthorDashboard />} />
         <Route path="/manage-expertise" element={<ManageExpertise />} />
-        <Route path="/assigned-papers" element={<AssignedPapers />} />
+<Route path="/assigned-papers" element={<AssignedPapers />} />
+        <Route path="/admin-dashboard" element={<EditorDashboard />} />
+        <Route path="/admin-paper/:id" element={<AdminPaperDetails />} />
       </Routes>
     </BrowserRouter>
   );

@@ -4,13 +4,22 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const user = JSON.parse(localStorage.getItem("user") || "{}");
-  const role = user?.role || "author";
+const role = user?.role || "author";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/login");
   };
+
+  const adminCards = [
+    {
+      title: "Paper Decisions",
+      path: "/admin-dashboard",
+      description: "View reviewer feedback and make final accept/reject decisions",
+      icon: "⚖️",
+    },
+  ];
 
   const authorCards = [
     {
@@ -27,14 +36,7 @@ export default function Dashboard() {
     },
   ];
 
-  const editorCards = [
-    {
-      title: "Assign Reviewer",
-      path: "/assignment",
-      description: "Automatically match papers with best reviewers",
-      icon: "🔗",
-    },
-  ];
+  const editorCards = adminCards;
 
   const reviewerCards = [
     {
@@ -52,8 +54,8 @@ export default function Dashboard() {
   ];
 
   const cards =
-    role === "editor"
-      ? editorCards
+    (role === "admin" || role === "editor")
+      ? adminCards
       : role === "reviewer"
       ? reviewerCards
       : authorCards;
