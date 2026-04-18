@@ -84,7 +84,7 @@ export default function AuthorDashboard() {
                   </p>
                   <div style={styles.paperMeta}>
                     <span>Keywords: {paper.keywords?.slice(0, 3).join(', ') || 'N/A'}{paper.keywords?.length > 3 ? '...' : ''}</span>
-                    <span>Submitted: {formatDate(paper.submissionDate)}</span>
+                    
                     <span>Status: <span style={{...styles.status, color: getStatusColor(paper.status)}}>{paper.status?.replace('_', ' ').toUpperCase()}</span></span>
                     {paper.fileName && <span>File: {paper.fileName}</span>}
                   </div>
