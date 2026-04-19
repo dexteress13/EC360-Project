@@ -71,6 +71,7 @@ if (req.user.role !== 'editor') {
       reviewerName: a.reviewerName,
       review: a.review,
       rating: a.rating,
+      decision: a.decision,
       submittedAt: a.submittedAt
     }));
 

@@ -12,7 +12,9 @@ const assignmentSchema = new mongoose.Schema({
   matchedKeywords: [String],
   matchScore: Number,
   review: String,
-  rating: Number
+  rating: Number,
+  decision: { type: String, enum: ['accept', 'reject'], default: null },
+  submittedAt: { type: Date, default: null }
 });
 
 module.exports = mongoose.model('Assignment', assignmentSchema);

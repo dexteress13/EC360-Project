@@ -170,9 +170,9 @@ export default function AdminPaperDetails() {
               <div style={styles.section}>
                 <h3 style={styles.sectionTitle}>🏷️ Keywords</h3>
                 <div style={styles.keywords}>
-                  {paper.keywords.split(",").map((kw, i) => (
+                  {(Array.isArray(paper.keywords) ? paper.keywords : paper.keywords.split(",")).map((kw, i) => (
                     <span key={i} style={styles.keyword}>
-                      {kw.trim()}
+                      {typeof kw === 'string' ? kw.trim() : kw}
                     </span>
                   ))}
                 </div>

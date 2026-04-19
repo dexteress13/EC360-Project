@@ -3,6 +3,7 @@ const router = express.Router();
 const Paper = require('../models/Paper');
 const upload = require('../middleware/upload');
 const authenticateToken = require('../middleware/auth');
+const { sendPaperDecisionEmail } = require('../utils/sendEmail');
 
 // SUBMIT PAPER
 router.post('/submit', authenticateToken, upload.single('file'), async (req, res) => {
@@ -118,7 +119,5 @@ if (req.user.role !== 'editor') {
     res.status(500).json({ message: 'Server error' });
   }
 });
-
-const { sendPaperDecisionEmail } = require('../utils/sendEmail');
 
 module.exports = router;
