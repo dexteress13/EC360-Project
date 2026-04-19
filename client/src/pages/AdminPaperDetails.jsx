@@ -139,7 +139,7 @@ if (user.role !== "editor") {
 }
 
 const styles = {
-  container: { minHeight: "100vh", padding: "20px", backgroundColor: "#f0f2f5" },
+  container: { minHeight: "100vh", padding: "20px", backgroundColor: "#1a73e8" },
   card: { maxWidth: "800px", margin: "0 auto", background: "white", borderRadius: "12px", padding: "40px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" },
   title: { textAlign: "center", color: "#1a73e8", marginBottom: "32px" },
   paperInfo: { marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid #eee" },
@@ -155,14 +155,15 @@ const styles = {
   acceptBtn: { 
     padding: "14px 28px", background: "#28a745", color: "white", border: "none", 
     borderRadius: "8px", fontSize: "16px", fontWeight: "600", cursor: "pointer",
-    minWidth: "160px"
+minWidth: "200px"
   },
   rejectBtn: { 
-    padding: "14px 28px", background: "#dc3545", color: "white", border: "none", 
+    padding: "14px 36px", background: "#dc3545", color: "white", border: "none", 
     borderRadius: "8px", fontSize: "16px", fontWeight: "600", cursor: "pointer",
-    minWidth: "160px"
+    minWidth: "200px"
   },
   backBtn: { 
+
     width: "100%", padding: "14px", background: "#6c757d", color: "white", 
     border: "none", borderRadius: "8px", fontSize: "16px", fontWeight: "600", 
     cursor: "pointer", marginTop: "24px" 
@@ -172,3 +173,4 @@ const styles = {
   error: { textAlign: "center", padding: "50px", color: "#dc3545", fontSize: "18px" },
   noReviews: { textAlign: "center", color: "#999", fontStyle: "italic", padding: "40px" },
 };
+

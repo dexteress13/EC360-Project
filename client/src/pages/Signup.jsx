@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Header from "../components/Header";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Signup() {
@@ -56,8 +57,7 @@ export default function Signup() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Sign up for RevMatch</p>
+        <Header />
 
         {message && <p style={styles.success}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -138,7 +138,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
+    backgroundColor: "#1a73e8",
     padding: "20px",
   },
   card: {

@@ -203,7 +203,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
+backgroundColor: "#1a73e8",
     padding: "20px",
   },
   card: {
@@ -339,12 +339,13 @@ const styles = {
     fontWeight: "600"
   },
   smallAssignButton: {
-    padding: "6px 12px",
+padding: "8px 20px",
     backgroundColor: "#1a73e8",
     color: "#fff",
     border: "none",
-    borderRadius: "4px",
-    fontSize: "12px",
+    borderRadius: "6px",
+    fontSize: "13px",
     cursor: "pointer",
   },
 };
+

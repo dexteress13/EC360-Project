@@ -44,6 +44,7 @@ if (user.role !== "editor") {
       <div style={styles.card}>
         <h2 style={styles.title}>RevMatch Admin Dashboard</h2>
         <p style={styles.subtitle}>Papers ready for decision ({papers.length})</p>
+
         {papers.length === 0 ? (
           <p style={styles.noPapers}>No pending papers.</p>
         ) : (
@@ -83,6 +84,7 @@ if (user.role !== "editor") {
             })}
           </>
         )}
+
         <button style={styles.backBtn} onClick={() => navigate("/dashboard")}>
           ← Back to Dashboard
         </button>
@@ -97,7 +99,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
+    backgroundColor: "#1a73e8",
     padding: "20px",
   },
   card: {
@@ -122,7 +124,7 @@ const styles = {
   },
   papersGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
     gap: "20px",
   },
   paperCard: {
@@ -143,17 +145,20 @@ const styles = {
     margin: "0 0 8px 0",
   },
   viewBtn: {
-    width: "100%",
-    padding: "12px",
+    padding: "8px 16px",
     backgroundColor: "#28a745",
     color: "white",
     border: "none",
-    borderRadius: "8px",
-    fontWeight: "600",
+    borderRadius: "6px",
+    fontSize: "14px",
+    fontWeight: "500",
     cursor: "pointer",
     marginTop: "12px",
+minWidth: "240px",
   },
   backBtn: {
+
+
     width: "100%",
     padding: "12px",
     backgroundColor: "#6c757d",
@@ -185,3 +190,4 @@ const styles = {
     padding: "60px",
   },
 };
+

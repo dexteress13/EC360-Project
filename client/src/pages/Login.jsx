@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Header from "../components/Header";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
@@ -59,8 +60,9 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Login to your account</p>
+
+        <Header />
+
 
         {message && <p style={styles.success}>{message}</p>}
         {error && <p style={styles.error}>{error}</p>}
@@ -108,9 +110,11 @@ export default function Login() {
           </button>
         </form>
 
+
         <p style={styles.link}>
-          Don't have an account? <Link to="/signup">Sign up</Link>
+          Don't have an account? <Link to="/signup" style={styles.linkText}>Sign up</Link>
         </p>
+
       </div>
     </div>
   );
@@ -122,7 +126,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
+    backgroundColor: "#1a73e8",
   },
   card: {
     backgroundColor: "#fff",
@@ -133,22 +137,75 @@ const styles = {
   },
   title: { textAlign: "center" },
   subtitle: { textAlign: "center", marginBottom: "20px" },
-  inputGroup: { marginBottom: "15px" },
+
+  inputGroup: {
+    marginBottom: "16px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "6px",
+    fontSize: "13px",
+    fontWeight: "500",
+    color: "#333",
+  },
   input: {
     width: "100%",
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #ccc",
+    padding: "10px 12px",
+    borderRadius: "8px",
+    border: "1px solid #ddd",
+    fontSize: "14px",
+    outline: "none",
+    boxSizing: "border-box",
+    transition: "border-color 0.2s, box-shadow 0.2s",
   },
+
+
   button: {
     width: "100%",
     padding: "12px",
     backgroundColor: "#1a73e8",
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "8px",
+    fontSize: "15px",
+    fontWeight: "600",
+    cursor: "pointer",
+    marginTop: "8px",
+    transition: "background-color 0.2s",
   },
-  success: { color: "green" },
-  error: { color: "red" },
-  link: { textAlign: "center", marginTop: "10px" },
+  ":hover": {
+    backgroundColor: "#1557b0",
+  },
+
+
+  success: {
+    backgroundColor: "#e6f4ea",
+    color: "#2d7a3a",
+    padding: "10px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    marginBottom: "12px",
+  },
+  error: {
+    backgroundColor: "#fce8e6",
+    color: "#c5221f",
+    padding: "10px",
+    borderRadius: "6px",
+    fontSize: "13px",
+    marginBottom: "12px",
+  },
+
+
+  link: {
+    textAlign: "center",
+    marginTop: "20px",
+    fontSize: "14px",
+    color: "#666",
+  },
+  linkText: {
+    color: "#1a73e8",
+    textDecoration: "none",
+    fontWeight: "500",
+  },
+
 };

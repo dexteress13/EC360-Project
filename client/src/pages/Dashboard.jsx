@@ -97,7 +97,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
+    backgroundColor: "#1a73e8",
     padding: "20px",
   },
   card: {
