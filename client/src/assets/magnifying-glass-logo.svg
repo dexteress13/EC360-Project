@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" id="magnifying-glass">
+  <defs>
+    <clipPath id="a">
+      <circle cx="17.46" cy="17.46" r="10.54" fill="none"></circle>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#a)">
+    <polygon fill="#3596fd" points="23.55 28.01 28.01 20.29 28.01 28.01 23.55 28.01"></polygon>
+    <polygon fill="#3596fd" points="23.36 28.01 28.01 19.96 28.01 20.29 23.55 28.01 23.36 28.01"></polygon>
+    <polygon fill="#3697fd" points="23.17 28.01 28.01 19.63 28.01 19.96 23.36 28.01 23.17 28.01"></polygon>
+    <polygon fill="#3797fd" points="22.98 28.01 28.01 19.29 28.01 19.63 23.17 28.01 22.98 28.01"></polygon>
+    <polygon fill="#3898fd" points="22.78 28.01 28.01 18.96 28.01 19.29 22.98 28.01 22.78 28.01"></polygon>
+    <polygon fill="#3998fd" points="22.59 28.01 28.01 18.63 28.01 18.96 22.78 28.01 22.59 28.01"></polygon>
+    <polygon fill="#3a99fd" points="22.4 28.01 28.01 18.3 28.01 18.63 22.59 28.01 22.4 28.01"></polygon>
+    <polygon fill="#3b99fd" points="22.21 28.01 28.01 17.96 28.01 18.3 22.4 28.01 22.21 28.01"></polygon>
+    <polygon fill="#3c9afd" points="22.02 28.01 28.01 17.63 28.01 17.96 22.21 28.01 22.02 28.01"></polygon>
+    <polygon fill="#3d9afd" points="21.82 28.01 28.01 17.3 28.01 17.63 22.02 28.01 21.82 28.01"></polygon>
+    <polygon fill="#3e9bfd" points="21.63 28.01 28.01 16.97 28.01 17.3 21.82 28.01 21.63 28.01"></polygon>
+    <polygon fill="#3f9bfd" points="21.44 28.01 28.01 16.64 28.01 16.97 21.63 28.01 21.44 28.01"></polygon>
+    <polygon fill="#409cfd" points="21.25 28.01 28.01 16.3 28.01 16.64 21.44 28.01 21.25 28.01"></polygon>
+    <polygon fill="#419cfd" points="21.06 28.01 28.01 15.97 28.01 16.3 21.25 28.01 21.06 28.01"></polygon>
+    <polygon fill="#429dfd" points="20.87 28.01 28.01 15.64 28.01 15.97 21.06 28.01 20.87 28.01"></polygon>
+    <polygon fill="#439dfd" points="20.68 28.01 28.01 15.31 28.01 15.64 20.87 28.01 20.68 28.01"></polygon>
+    <polygon fill="#449efd" points="20.48 28.01 28.01 14.98 28.01 15.31 20.68 28.01 20.48 28.01"></polygon>
+    <polygon fill="#459efd" points="20.29 28.01 28.01 14.64 28.01 14.98 20.48 28.01 20.29 28.01"></polygon>
+    <polygon fill="#469ffd" points="20.1 28.01 28.01 14.31 28.01 14.64 20.29 28.01 20.1 28.01"></polygon>
+    <polygon fill="#479ffd" points="19.91 28.01 28.01 13.98 28.01 14.31 20.1 28.01 19.91 28.01"></polygon>
+    <polygon fill="#48a0fd" points="19.72 28.01 28.01 13.65 28.01 13.98 19.91 28.01 19.72 28.01"></polygon>
+    <polygon fill="#49a0fd" points="19.52 28.01 28.01 13.31 28.01 13.65 19.72 28.01 19.52 28.01"></polygon>
+    <polygon fill="#4aa1fd" points="19.33 28.01 28.01 12.98 28.01 13.31 19.52 28.01 19.33 28.01"></polygon>
+    <polygon fill="#4ba1fd" points="19.14 28.01 28.01 12.65 28.01 12.98 19.33 28.01 19.14 28.01"></polygon>
+    <polygon fill="#4ca2fd" points="18.95 28.01 28.01 12.32 28.01 12.65 19.14 28.01 18.95 28.01"></polygon>
+    <polygon fill="#4da2fd" points="18.76 28.01 28.01 11.99 28.01 12.32 18.95 28.01 18.76 28.01"></polygon>
+    <polygon fill="#4ea3fd" points="18.57 28.01 28.01 11.65 28.01 11.99 18.76 28.01 18.57 28.01"></polygon>
+    <polygon fill="#4fa3fd" points="18.37 28.01 28.01 11.32 28.01 11.65 18.57 28.01 18.37 28.01"></polygon>
+    <polygon fill="#50a4fd" points="18.18 28.01 28.01 10.99 28.01 11.32 18.37 28.01 18.18 28.01"></polygon>
+    <polygon fill="#51a4fd" points="17.99 28.01 28.01 10.66 28.01 10.99 18.18 28.01 17.99 28.01"></polygon>
+    <polygon fill="#52a5fd" points="17.8 28.01 28.01 10.32 28.01 10.66 17.99 28.01 17.8 28.01"></polygon>
+    <polygon fill="#53a5fd" points="17.61 28.01 28.01 9.99 28.01 10.32 17.8 28.01 17.61 28.01"></polygon>
+    <polygon fill="#54a6fd" points="17.41 28.01 28.01 9.66 28.01 9.99 17.61 28.01 17.41 28.01"></polygon>
+    <polygon fill="#55a7fd" points="17.22 28.01 28.01 9.33 28.01 9.66 17.41 28.01 17.22 28.01"></polygon>
+    <polygon fill="#56a7fd" points="17.03 28.01 28.01 9 28.01 9.33 17.22 28.01 17.03 28.01"></polygon>
+    <polygon fill="#57a8fd" points="16.84 28.01 28.01 8.66 28.01 9 17.03 28.01 16.84 28.01"></polygon>
+    <polygon fill="#58a8fd" points="16.65 28.01 28.01 8.33 28.01 8.66 16.84 28.01 16.65 28.01"></polygon>
+    <polygon fill="#59a9fd" points="16.45 28.01 28.01 8 28.01 8.33 16.65 28.01 16.45 28.01"></polygon>
+    <polygon fill="#5aa9fd" points="16.26 28.01 28.01 7.67 28.01 8 16.45 28.01 16.26 28.01"></polygon>
+    <polygon fill="#5baafd" points="16.07 28.01 28.01 7.34 28.01 7.67 16.26 28.01 16.07 28.01"></polygon>
+    <polygon fill="#5caafd" points="15.88 28.01 27.86 7.25 28.01 7.33 28.01 7.34 16.07 28.01 15.88 28.01"></polygon>
+    <polygon fill="#5dabfd" points="15.69 28.01 27.72 7.17 27.86 7.25 15.88 28.01 15.69 28.01"></polygon>
+    <polygon fill="#5eabfd" points="15.5 28.01 27.58 7.08 27.72 7.17 15.69 28.01 15.5 28.01"></polygon>
+    <polygon fill="#5facfd" points="15.3 28.01 27.43 7 27.58 7.08 15.5 28.01 15.3 28.01"></polygon>
+    <polygon fill="#60acfd" points="15.11 28.01 27.29 6.92 27.43 7 15.3 28.01 15.11 28.01"></polygon>
+    <polygon fill="#61adfd" points="14.92 28.01 27.1 6.92 27.29 6.92 27.29 6.92 15.11 28.01 14.92 28.01"></polygon>
+    <polygon fill="#62adfd" points="14.73 28.01 26.91 6.92 27.1 6.92 14.92 28.01 14.73 28.01"></polygon>
+    <polygon fill="#63aefd" points="14.54 28.01 26.71 6.92 26.91 6.92 14.73 28.01 14.54 28.01"></polygon>
+    <polygon fill="#64aefd" points="14.35 28.01 26.52 6.92 26.71 6.92 14.54 28.01 14.35 28.01"></polygon>
+    <polygon fill="#65affd" points="14.15 28.01 26.33 6.92 26.52 6.92 14.35 28.01 14.15 28.01"></polygon>
+    <polygon fill="#66affd" points="13.96 28.01 26.14 6.92 26.33 6.92 14.15 28.01 13.96 28.01"></polygon>
+    <polygon fill="#67b0fd" points="13.77 28.01 25.95 6.92 26.14 6.92 13.96 28.01 13.77 28.01"></polygon>
+    <polygon fill="#68b0fd" points="13.58 28.01 25.75 6.92 25.95 6.92 13.77 28.01 13.58 28.01"></polygon>
+    <polygon fill="#69b1fd" points="13.39 28.01 25.56 6.92 25.75 6.92 13.58 28.01 13.39 28.01"></polygon>
+    <polygon fill="#6ab1fd" points="13.2 28.01 25.37 6.92 25.56 6.92 13.39 28.01 13.2 28.01"></polygon>
+    <polygon fill="#6bb2fd" points="13 28.01 25.18 6.92 25.37 6.92 13.2 28.01 13 28.01"></polygon>
+    <polygon fill="#6cb2fd" points="12.81 28.01 24.99 6.92 25.18 6.92 13 28.01 12.81 28.01"></polygon>
+    <polygon fill="#6db3fd" points="12.62 28.01 24.8 6.92 24.99 6.92 12.81 28.01 12.62 28.01"></polygon>
+    <polygon fill="#6eb3fd" points="12.43 28.01 24.6 6.92 24.8 6.92 12.62 28.01 12.43 28.01"></polygon>
+    <polygon fill="#6fb4fd" points="12.24 28.01 24.41 6.92 24.6 6.92 12.43 28.01 12.24 28.01"></polygon>
+    <polygon fill="#70b4fd" points="12.04 28.01 24.22 6.92 24.41 6.92 12.24 28.01 12.04 28.01"></polygon>
+    <polygon fill="#71b5fd" points="11.85 28.01 24.03 6.92 24.22 6.92 12.04 28.01 11.85 28.01"></polygon>
+    <polygon fill="#72b5fd" points="11.66 28.01 23.84 6.92 24.03 6.92 11.85 28.01 11.66 28.01"></polygon>
+    <polygon fill="#73b6fd" points="11.47 28.01 23.64 6.92 23.84 6.92 11.66 28.01 11.47 28.01"></polygon>
+    <polygon fill="#75b7fd" points="11.28 28.01 23.45 6.92 23.64 6.92 11.47 28.01 11.28 28.01"></polygon>
+    <polygon fill="#76b7fd" points="11.09 28.01 23.26 6.92 23.45 6.92 11.28 28.01 11.09 28.01"></polygon>
+    <polygon fill="#77b8fd" points="10.89 28.01 23.07 6.92 23.26 6.92 11.09 28.01 10.89 28.01"></polygon>
+    <polygon fill="#78b8fd" points="10.7 28.01 22.88 6.92 23.07 6.92 10.89 28.01 10.7 28.01"></polygon>
+    <polygon fill="#79b9fd" points="10.51 28.01 22.69 6.92 22.88 6.92 10.7 28.01 10.51 28.01"></polygon>
+    <polygon fill="#7ab9fd" points="10.32 28.01 22.49 6.92 22.69 6.92 10.51 28.01 10.32 28.01"></polygon>
+    <polygon fill="#7bbafd" points="10.13 28.01 22.3 6.92 22.49 6.92 10.32 28.01 10.13 28.01"></polygon>
+    <polygon fill="#7cbafd" points="9.94 28.01 22.11 6.92 22.3 6.92 10.13 28.01 9.94 28.01"></polygon>
+    <polygon fill="#7dbbfd" points="9.74 28.01 21.92 6.92 22.11 6.92 9.94 28.01 9.74 28.01"></polygon>
+    <polygon fill="#7ebbfd" points="9.55 28.01 21.73 6.92 21.92 6.92 9.74 28.01 9.55 28.01"></polygon>
+    <polygon fill="#7fbcfd" points="9.36 28.01 21.54 6.92 21.73 6.92 9.55 28.01 9.36 28.01"></polygon>
+    <polygon fill="#80bcfd" points="9.17 28.01 21.34 6.92 21.54 6.92 9.36 28.01 9.17 28.01"></polygon>
+    <polygon fill="#81bdfd" points="8.98 28.01 21.15 6.92 21.34 6.92 9.17 28.01 8.98 28.01"></polygon>
+    <polygon fill="#82bdfd" points="8.78 28.01 20.96 6.92 21.15 6.92 8.98 28.01 8.78 28.01"></polygon>
+    <polygon fill="#83befd" points="8.59 28.01 20.77 6.92 20.96 6.92 8.78 28.01 8.59 28.01"></polygon>
+    <polygon fill="#84befd" points="8.4 28.01 20.58 6.92 20.77 6.92 8.59 28.01 8.4 28.01"></polygon>
+    <polygon fill="#85bffd" points="8.21 28.01 20.39 6.92 20.58 6.92 8.4 28.01 8.21 28.01"></polygon>
+    <polygon fill="#86bffd" points="8.02 28.01 20.19 6.92 20.39 6.92 8.21 28.01 8.02 28.01"></polygon>
+    <polygon fill="#87c0fd" points="7.83 28.01 20 6.92 20.19 6.92 8.02 28.01 7.83 28.01"></polygon>
+    <polygon fill="#88c0fd" points="7.64 28.01 7.63 28 19.81 6.92 20 6.92 7.83 28.01 7.64 28.01"></polygon>
+    <polygon fill="#89c1fd" points="7.63 28 7.49 27.92 19.62 6.92 19.81 6.92 7.63 28"></polygon>
+    <polygon fill="#8ac1fd" points="7.49 27.92 7.35 27.84 19.43 6.92 19.62 6.92 7.49 27.92"></polygon>
+    <polygon fill="#8bc2fd" points="7.35 27.84 7.2 27.75 19.23 6.92 19.43 6.92 7.35 27.84"></polygon>
+    <polygon fill="#8cc2fd" points="7.2 27.75 7.06 27.67 19.04 6.92 19.23 6.92 7.2 27.75"></polygon>
+    <polygon fill="#8dc3fd" points="7.06 27.67 6.92 27.59 6.92 27.59 18.85 6.92 19.04 6.92 7.06 27.67"></polygon>
+    <polygon fill="#8ec3fd" points="6.92 27.25 18.66 6.92 18.85 6.92 6.92 27.59 6.92 27.25"></polygon>
+    <polygon fill="#8fc4fd" points="6.92 26.92 18.47 6.92 18.66 6.92 6.92 27.25 6.92 26.92"></polygon>
+    <polygon fill="#90c4fd" points="6.92 26.59 18.27 6.92 18.47 6.92 6.92 26.92 6.92 26.59"></polygon>
+    <polygon fill="#91c5fd" points="6.92 26.26 18.08 6.92 18.27 6.92 6.92 26.59 6.92 26.26"></polygon>
+    <polygon fill="#92c5fd" points="6.92 25.93 17.89 6.92 18.08 6.92 6.92 26.26 6.92 25.93"></polygon>
+    <polygon fill="#93c6fd" points="6.92 25.59 17.7 6.92 17.89 6.92 6.92 25.93 6.92 25.59"></polygon>
+    <polygon fill="#94c6fd" points="6.92 25.26 17.51 6.92 17.7 6.92 6.92 25.59 6.92 25.26"></polygon>
+    <polygon fill="#95c7fd" points="6.92 24.93 17.32 6.92 17.51 6.92 6.92 25.26 6.92 24.93"></polygon>
+    <polygon fill="#96c8fd" points="6.92 24.6 17.13 6.92 17.32 6.92 6.92 24.93 6.92 24.6"></polygon>
+    <polygon fill="#97c8fd" points="6.92 24.27 16.93 6.92 17.13 6.92 6.92 24.6 6.92 24.27"></polygon>
+    <polygon fill="#98c9fd" points="6.92 23.93 16.74 6.92 16.93 6.92 6.92 24.27 6.92 23.93"></polygon>
+    <polygon fill="#99c9fd" points="6.92 23.6 16.55 6.92 16.74 6.92 6.92 23.93 6.92 23.6"></polygon>
+    <polygon fill="#9acafd" points="6.92 23.27 16.36 6.92 16.55 6.92 6.92 23.6 6.92 23.27"></polygon>
+    <polygon fill="#9bcafd" points="6.92 22.94 16.17 6.92 16.36 6.92 6.92 23.27 6.92 22.94"></polygon>
+    <polygon fill="#9ccbfd" points="6.92 22.6 15.97 6.92 16.17 6.92 6.92 22.94 6.92 22.6"></polygon>
+    <polygon fill="#9dcbfd" points="6.92 22.27 15.78 6.92 15.97 6.92 6.92 22.6 6.92 22.27"></polygon>
+    <polygon fill="#9eccfd" points="6.92 21.94 15.59 6.92 15.78 6.92 6.92 22.27 6.92 21.94"></polygon>
+    <polygon fill="#9fccfd" points="6.92 21.61 15.4 6.92 15.59 6.92 6.92 21.94 6.92 21.61"></polygon>
+    <polygon fill="#a0cdfd" points="6.92 21.28 15.21 6.92 15.4 6.92 6.92 21.61 6.92 21.28"></polygon>
+    <polygon fill="#a1cdfd" points="6.92 20.94 15.02 6.92 15.21 6.92 6.92 21.28 6.92 20.94"></polygon>
+    <polygon fill="#a2cefd" points="6.92 20.61 14.82 6.92 15.02 6.92 6.92 20.94 6.92 20.61"></polygon>
+    <polygon fill="#a3cefd" points="6.92 20.28 14.63 6.92 14.82 6.92 6.92 20.61 6.92 20.28"></polygon>
+    <polygon fill="#a4cffd" points="6.92 19.95 14.44 6.92 14.63 6.92 6.92 20.28 6.92 19.95"></polygon>
+    <polygon fill="#a5cffd" points="6.92 19.61 14.25 6.92 14.44 6.92 6.92 19.95 6.92 19.61"></polygon>
+    <polygon fill="#a6d0fd" points="6.92 19.28 14.06 6.92 14.25 6.92 6.92 19.61 6.92 19.28"></polygon>
+    <polygon fill="#a7d0fd" points="6.92 18.95 13.86 6.92 14.06 6.92 6.92 19.28 6.92 18.95"></polygon>
+    <polygon fill="#a8d1fd" points="6.92 18.62 13.67 6.92 13.86 6.92 6.92 18.95 6.92 18.62"></polygon>
+    <polygon fill="#a9d1fd" points="6.92 18.29 13.48 6.92 13.67 6.92 6.92 18.62 6.92 18.29"></polygon>
+    <polygon fill="#aad2fd" points="6.92 17.95 13.29 6.92 13.48 6.92 6.92 18.29 6.92 17.95"></polygon>
+    <polygon fill="#abd2fd" points="6.92 17.62 13.1 6.92 13.29 6.92 6.92 17.95 6.92 17.62"></polygon>
+    <polygon fill="#acd3fd" points="6.92 17.29 12.91 6.92 13.1 6.92 6.92 17.62 6.92 17.29"></polygon>
+    <polygon fill="#add3fd" points="6.92 16.96 12.71 6.92 12.91 6.92 6.92 17.29 6.92 16.96"></polygon>
+    <polygon fill="#aed4fd" points="6.92 16.63 12.52 6.92 12.71 6.92 6.92 16.96 6.92 16.63"></polygon>
+    <polygon fill="#afd4fd" points="6.92 16.29 12.33 6.92 12.52 6.92 6.92 16.63 6.92 16.29"></polygon>
+    <polygon fill="#b0d5fd" points="6.92 15.96 12.14 6.92 12.33 6.92 6.92 16.29 6.92 15.96"></polygon>
+    <polygon fill="#b1d5fd" points="6.92 15.63 11.95 6.92 12.14 6.92 6.92 15.96 6.92 15.63"></polygon>
+    <polygon fill="#b2d6fd" points="6.92 15.3 11.76 6.92 11.95 6.92 6.92 15.63 6.92 15.3"></polygon>
+    <polygon fill="#b3d6fd" points="6.92 14.96 11.56 6.92 11.76 6.92 6.92 15.3 6.92 14.96"></polygon>
+    <polygon fill="#b4d7fd" points="6.92 14.63 11.37 6.92 11.56 6.92 6.92 14.96 6.92 14.63"></polygon>
+    <polygon fill="#b4d7fd" points="11.37 6.92 6.92 14.63 6.92 6.92 11.37 6.92"></polygon>
+  </g>
+  <path fill="#0d1935" d="M20.38,2.5A9.11,9.11,0,0,0,13,16.94l-2.52,2.52-.58-.58a.51.51,0,0,0-.71,0l-5.8,5.81a2.79,2.79,0,0,0,0,3.95,2.79,2.79,0,0,0,4,0l4.47-4.47a.49.49,0,0,0-.7-.7L6.61,27.94a1.8,1.8,0,0,1-2.55-2.55l5.46-5.45.58.59,1.37,1.37.94.94a.5.5,0,1,0,.71-.71l-.58-.58,1.73-1.73a.51.51,0,0,0,0-.71.5.5,0,0,0-.71,0l-1.73,1.73-.67-.67,2.45-2.45A9.12,9.12,0,1,0,20.38,2.5Zm0,17.25a8.13,8.13,0,1,1,8.12-8.12A8.14,8.14,0,0,1,20.38,19.75Z"></path>
+  <path fill="#0d1935" d="M17.47,5.05a7,7,0,0,0-3.86,4.17.5.5,0,0,0,.32.64l.15,0a.5.5,0,0,0,.48-.34A6,6,0,0,1,17.86,6a.5.5,0,1,0-.39-.92Z"></path>
+</svg>

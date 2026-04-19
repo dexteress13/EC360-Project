@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Alert from "../components/Alert";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function SubmitPaper() {
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ export default function SubmitPaper() {
     setFile(selected);
   };
 
-    const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -62,7 +65,6 @@ export default function SubmitPaper() {
     data.append("title", formData.title);
     data.append("abstract", formData.abstract);
     data.append("keywords", formData.keywords);
-    // Remove submittedBy - backend will use req.user.id
     data.append("file", file);
 
     try {
@@ -89,6 +91,7 @@ export default function SubmitPaper() {
         setMessage("Paper submitted successfully!");
         setFormData({ title: "", abstract: "", keywords: "" });
         setFile(null);
+        setTimeout(() => navigate("/author-dashboard"), 2000);
       }
     } catch (err) {
       console.error('Submit network error:', err);
@@ -98,172 +101,227 @@ export default function SubmitPaper() {
     }
   };
 
-
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Submit Your Paper</p>
-
-        {message && <p style={styles.success}>{message}</p>}
-        {error && <p style={styles.error}>{error}</p>}
-
-        <form onSubmit={handleSubmit}>
-
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Paper Title</label>
-            <input
-              style={styles.input}
-              type="text"
-              name="title"
-              placeholder="Enter paper title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
+    <>
+      <Navbar />
+      <div style={styles.container}>
+        <div style={styles.card}>
+          <div style={styles.header}>
+            <h1 style={styles.title}>📄 Submit Your Paper</h1>
+            <p style={styles.subtitle}>Share your research with our review community</p>
           </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Abstract</label>
-            <textarea
-              style={styles.textarea}
-              name="abstract"
-              placeholder="Enter paper abstract"
-              value={formData.abstract}
-              onChange={handleChange}
-              required
-            />
-          </div>
+          {message && <Alert type="success" message={message} />}
+          {error && <Alert type="danger" message={error} onClose={() => setError("")} />}
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Keywords</label>
-            <input
-              style={styles.input}
-              type="text"
-              name="keywords"
-              placeholder="e.g. machine learning, NLP, deep learning"
-              value={formData.keywords}
-              onChange={handleChange}
-              required
-            />
-            <p style={styles.hint}>Separate keywords with commas</p>
-          </div>
+          <form onSubmit={handleSubmit}>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Paper Title *</label>
+              <input
+                style={styles.input}
+                type="text"
+                name="title"
+                placeholder="Enter your paper title"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+              <p style={styles.hint}>Make your title clear and descriptive</p>
+            </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Upload PDF</label>
-            <input
-              style={styles.fileInput}
-              type="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-              required
-            />
-          </div>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Abstract *</label>
+              <textarea
+                style={styles.textarea}
+                name="abstract"
+                placeholder="Write a brief summary of your research (100-300 words)"
+                value={formData.abstract}
+                onChange={handleChange}
+                required
+              />
+              <p style={styles.hint}>Help reviewers understand your work quickly</p>
+            </div>
 
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? "Submitting..." : "Submit Paper"}
-          </button>
-        </form>
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Keywords *</label>
+              <input
+                style={styles.input}
+                type="text"
+                name="keywords"
+                placeholder="e.g., machine learning, NLP, deep learning"
+                value={formData.keywords}
+                onChange={handleChange}
+                required
+              />
+              <p style={styles.hint}>Separate keywords with commas (helps with reviewer matching)</p>
+            </div>
+
+            <div style={styles.formGroup}>
+              <label style={styles.label}>Upload PDF File *</label>
+              <div
+                style={{
+                  ...styles.fileInput,
+                  borderColor: file ? "var(--success-600)" : "var(--border-color)",
+                  backgroundColor: file ? "rgba(16, 185, 129, 0.05)" : "var(--bg-secondary)",
+                }}
+              >
+                <input
+                  style={styles.fileInputElement}
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileChange}
+                  required
+                />
+                <div style={styles.fileInputContent}>
+                  <span style={styles.fileIcon}>📁</span>
+                  <p style={styles.fileText}>
+                    {file ? `✓ ${file.name}` : "Click or drag PDF file here"}
+                  </p>
+                  <p style={styles.fileSubtext}>Maximum file size: 50MB</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              style={{
+                ...styles.button,
+                opacity: loading ? 0.7 : 1,
+              }}
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? <LoadingSpinner size="sm" /> : "📤 Submit Paper"}
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#1a73e8",
-    padding: "20px",
+    minHeight: "calc(100vh - 64px)",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-xl) var(--spacing-lg)",
   },
   card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    boxShadow: "var(--shadow-lg)",
     width: "100%",
-    maxWidth: "480px",
+    maxWidth: "600px",
+    margin: "0 auto",
+    border: "1px solid var(--border-light)",
+  },
+  header: {
+    padding: "var(--spacing-xl)",
+    borderBottom: "1px solid var(--border-light)",
+    textAlign: "center",
   },
   title: {
-    textAlign: "center",
-    fontSize: "28px",
+    fontSize: "24px",
     fontWeight: "700",
-    color: "#1a73e8",
-    marginBottom: "4px",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-sm) 0",
   },
   subtitle: {
-    textAlign: "center",
-    color: "#666",
-    marginBottom: "24px",
     fontSize: "14px",
+    color: "var(--text-secondary)",
+    margin: 0,
   },
-  inputGroup: { marginBottom: "16px" },
+  formGroup: {
+    marginBottom: "var(--spacing-lg)",
+    padding: "var(--spacing-lg)",
+    borderBottom: "1px solid var(--border-light)",
+  },
   label: {
     display: "block",
-    marginBottom: "6px",
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#333",
+    marginBottom: "var(--spacing-sm)",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "var(--text-primary)",
   },
   input: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    padding: "var(--spacing-md)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-color)",
     fontSize: "14px",
-    outline: "none",
+    color: "var(--text-primary)",
+    backgroundColor: "var(--bg-primary)",
+    transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
     boxSizing: "border-box",
   },
   textarea: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    padding: "var(--spacing-md)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-color)",
     fontSize: "14px",
-    outline: "none",
-    boxSizing: "border-box",
-    minHeight: "100px",
+    color: "var(--text-primary)",
+    backgroundColor: "var(--bg-primary)",
+    fontFamily: "inherit",
     resize: "vertical",
+    minHeight: "120px",
+    transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
+    boxSizing: "border-box",
+  },
+  hint: {
+    fontSize: "12px",
+    color: "var(--text-tertiary)",
+    margin: "var(--spacing-sm) 0 0 0",
   },
   fileInput: {
-    width: "100%",
-    fontSize: "13px",
-    color: "#333",
+    position: "relative",
+    border: "2px dashed var(--border-color)",
+    borderRadius: "var(--radius-lg)",
+    padding: "var(--spacing-xl)",
+    textAlign: "center",
+    backgroundColor: "var(--bg-secondary)",
+    transition: "all var(--transition-fast)",
+    cursor: "pointer",
+  },
+  fileInputElement: {
+    position: "absolute",
+    inset: 0,
+    opacity: 0,
+    cursor: "pointer",
+  },
+  fileInputContent: {
+    pointerEvents: "none",
+  },
+  fileIcon: {
+    fontSize: "32px",
+    display: "block",
+    marginBottom: "var(--spacing-md)",
+  },
+  fileText: {
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-sm) 0",
+  },
+  fileSubtext: {
+    fontSize: "12px",
+    color: "var(--text-tertiary)",
+    margin: 0,
   },
   button: {
     width: "100%",
-    padding: "12px",
-    backgroundColor: "#1a73e8",
-    color: "#fff",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "15px",
-    fontWeight: "600",
+    borderRadius: "var(--radius-lg)",
+    fontSize: "16px",
+    fontWeight: "700",
     cursor: "pointer",
-    marginTop: "8px",
-  },
-  success: {
-    backgroundColor: "#e6f4ea",
-    color: "#2d7a3a",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-  error: {
-    backgroundColor: "#fce8e6",
-    color: "#c5221f",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-  hint: {
-    fontSize: "11px",
-    color: "#999",
-    marginTop: "4px",
+    margin: "var(--spacing-lg) 0",
+    transition: "all var(--transition-fast)",
+    boxShadow: "var(--shadow-md)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
 };

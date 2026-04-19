@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Alert from "../components/Alert";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Assignment() {
+  const navigate = useNavigate();
   const [papers, setPapers] = useState([]);
   const [selectedPaper, setSelectedPaper] = useState("");
   const [result, setResult] = useState(null);
@@ -8,12 +13,13 @@ export default function Assignment() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-    if (user.role !== "editor" && user.role !== "admin") {
+    if (user.role?.toLowerCase() !== "editor") {
       navigate("/dashboard");
       return;
     }
@@ -22,8 +28,9 @@ export default function Assignment() {
       headers: { "Authorization": `Bearer ${token}` }
     })
       .then((res) => res.json())
-      .then((data) => setPapers(data.filter(p => p.status === 'submitted')))
-      .catch(() => setError("Could not load papers"));
+      .then((data) => setPapers(data.filter(p => p.status === 'submitted') || []))
+      .catch(() => setError("Could not load papers"))
+      .finally(() => setInitialLoading(false));
   }, []);
 
   // Fetch matches when a paper is selected
@@ -31,7 +38,7 @@ export default function Assignment() {
     if (selectedPaper) {
       fetch(`http://localhost:5000/api/assignment/potential-matches/${selectedPaper}`)
         .then(res => res.json())
-        .then(data => setPotentialMatches(data))
+        .then(data => setPotentialMatches(data || []))
         .catch(() => setError("Failed to fetch reviewer matches"));
     } else {
       setPotentialMatches([]);
@@ -60,8 +67,9 @@ export default function Assignment() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage("Reviewer assigned successfully!");
+        setMessage("✓ Reviewer assigned successfully!");
         setResult(data.assignment);
+        setTimeout(() => setMessage(""), 3000);
       }
     } catch (err) {
       setError("Server error. Please try again.");
@@ -74,21 +82,22 @@ export default function Assignment() {
     setLoading(true);
     setError("");
     setMessage("");
-    
+
     try {
       const res = await fetch("http://localhost:5000/api/assignment/assign-manual", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paperId: selectedPaper, reviewerId })
       });
-      
+
       const data = await res.json();
       if (!res.ok) {
         setError(data.message);
       } else {
-        setMessage("Reviewer assigned successfully!");
+        setMessage("✓ Reviewer assigned successfully!");
         setResult(data.assignment);
         setPotentialMatches([]);
+        setTimeout(() => setMessage(""), 3000);
       }
     } catch (err) {
       setError("Server error.");
@@ -97,255 +106,449 @@ export default function Assignment() {
     }
   };
 
-  return (
-    <div style={styles.container}>
-      <div style={{...styles.card, maxWidth: potentialMatches.length > 0 && !result ? "900px" : "480px"}}>
-        <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Reviewer Assignment Management</p>
+  const handleReset = () => {
+    setResult(null);
+    setSelectedPaper("");
+    setMessage("");
+    setError("");
+  };
 
-        {message && <p style={styles.success}>{message}</p>}
-        {error && <p style={styles.error}>{error}</p>}
-
-        <div style={styles.inputGroup}>
-          <label style={styles.label}>Select Paper</label>
-          <select
-            style={styles.select}
-            value={selectedPaper}
-            onChange={(e) => setSelectedPaper(e.target.value)}
-          >
-            <option value="">-- Select a paper --</option>
-            {papers.map((paper) => (
-              <option key={paper._id} value={paper._id}>
-                {paper.title}
-              </option>
-            ))}
-          </select>
+  if (initialLoading)
+    return (
+      <>
+        <Navbar />
+        <div style={styles.container}>
+          <LoadingSpinner size="lg" label="Loading unassigned papers..." />
         </div>
+      </>
+    );
 
-        {!result && selectedPaper && (
-          <button style={styles.button} onClick={handleAssign} disabled={loading}>
-            {loading ? "Assigning..." : "Auto-Assign Best Match"}
-          </button>
-        )}
+  return (
+    <>
+      <Navbar />
+      <div style={styles.container}>
+        <div style={styles.content}>
+          {/* Header */}
+          <div style={styles.header}>
+            <h1 style={styles.title}>🎯 Assign Reviewers</h1>
+            <p style={styles.subtitle}>
+              Match papers with qualified reviewers
+            </p>
+          </div>
 
-        {selectedPaper && potentialMatches.length > 0 && !result && (
-          <div style={styles.matchesSection}>
-            <h3 style={styles.resultTitle}>Potential Reviewers (by expertise match)</h3>
-            <div style={styles.matchesTable}>
-              <div style={styles.tableHeader}>
-                <span>Reviewer</span>
-                <span>Expertise</span>
-                <span>Match</span>
-                <span>Action</span>
-              </div>
-              {potentialMatches.map((match) => (
-                <div key={match._id} style={styles.tableRow}>
-                  <div style={styles.reviewerInfo}>
-                    <span style={styles.reviewerName}>{match.name}</span>
-                    <span style={styles.reviewerEmail}>{match.email}</span>
+          {/* Alerts */}
+          {message && (
+            <Alert type="success" message={message} onClose={() => setMessage("")} />
+          )}
+          {error && (
+            <Alert type="danger" message={error} onClose={() => setError("")} />
+          )}
+
+          <div style={styles.mainGrid}>
+            {/* Left Panel - Selection */}
+            <div style={styles.leftPanel}>
+              <div style={styles.card}>
+                <h2 style={styles.cardTitle}>📄 Select Paper</h2>
+
+                {papers.length === 0 ? (
+                  <div style={styles.emptyState}>
+                    <div style={styles.emptyIcon}>📭</div>
+                    <p style={styles.emptyText}>
+                      No papers pending reviewer assignment
+                    </p>
                   </div>
-                  <span style={styles.expertiseText}>{match.expertise.join(", ")}</span>
-                  <span style={styles.scoreBadge}>{match.score} keyword(s)</span>
-                  <button 
-                    style={styles.smallAssignButton} 
-                    onClick={() => handleManualAssign(match._id)}
-                    disabled={loading}
+                ) : (
+                  <>
+                    <div style={styles.formGroup}>
+                      <label style={styles.label}>Paper *</label>
+                      <select
+                        style={styles.select}
+                        value={selectedPaper}
+                        onChange={(e) => setSelectedPaper(e.target.value)}
+                      >
+                        <option value="">-- Select a paper --</option>
+                        {papers.map((paper) => (
+                          <option key={paper._id} value={paper._id}>
+                            {paper.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {!result && selectedPaper && (
+                      <button
+                        style={{
+                          ...styles.button,
+                          opacity: loading ? 0.7 : 1,
+                        }}
+                        onClick={handleAssign}
+                        disabled={loading}
+                      >
+                        {loading ? "Finding best match..." : "🔍 Auto-Assign Best Match"}
+                      </button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Right Panel - Results */}
+            {selectedPaper && !result && potentialMatches.length > 0 && (
+              <div style={styles.rightPanel}>
+                <div style={styles.card}>
+                  <h2 style={styles.cardTitle}>
+                    👥 Potential Reviewers ({potentialMatches.length})
+                  </h2>
+                  <p style={styles.matchesSubtitle}>
+                    Ranked by expertise match
+                  </p>
+
+                  <div style={styles.matchesContainer}>
+                    {potentialMatches.map((match, index) => (
+                      <div key={match._id} style={styles.matchCard}>
+                        <div style={styles.matchHeader}>
+                          <div>
+                            <div style={styles.matchRank}>#{index + 1}</div>
+                            <h4 style={styles.matchName}>{match.name}</h4>
+                            <p style={styles.matchEmail}>{match.email}</p>
+                          </div>
+                          <div
+                            style={{
+                              ...styles.matchScore,
+                              backgroundColor:
+                                match.score >= 3
+                                  ? "#10b98130"
+                                  : match.score === 2
+                                  ? "#f59e0b30"
+                                  : "#6b728030",
+                            }}
+                          >
+                            {match.score}
+                            <br />
+                            match
+                          </div>
+                        </div>
+
+                        <div style={styles.matchExpertise}>
+                          <span style={styles.expertiseLabel}>Expertise:</span>
+                          <div style={styles.expertiseTags}>
+                            {match.expertise.slice(0, 4).map((exp, i) => (
+                              <span key={i} style={styles.expertiseTag}>
+                                {exp}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        <button
+                          style={styles.assignButton}
+                          onClick={() => handleManualAssign(match._id)}
+                          disabled={loading}
+                        >
+                          {loading ? "Assigning..." : "✓ Assign This Reviewer"}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Result Panel */}
+            {result && (
+              <div style={styles.rightPanel}>
+                <div style={styles.resultCard}>
+                  <div style={styles.resultIcon}>✓</div>
+                  <h2 style={styles.resultTitle}>Assignment Complete</h2>
+
+                  <div style={styles.resultContent}>
+                    <div style={styles.resultItem}>
+                      <span style={styles.resultLabel}>📄 Paper:</span>
+                      <span style={styles.resultValue}>{result.paperTitle}</span>
+                    </div>
+                    <div style={styles.resultItem}>
+                      <span style={styles.resultLabel}>👤 Assigned Reviewer:</span>
+                      <span style={styles.resultValue}>{result.reviewerName}</span>
+                    </div>
+                    <div style={styles.resultItem}>
+                      <span style={styles.resultLabel}>📧 Email:</span>
+                      <span style={styles.resultValue}>{result.reviewerEmail}</span>
+                    </div>
+                    <div style={styles.resultItem}>
+                      <span style={styles.resultLabel}>🔗 Matched Keywords:</span>
+                      <div style={styles.matchedKeywords}>
+                        {result.matchedKeywords.map((kw, i) => (
+                          <span key={i} style={styles.keyword}>
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div style={styles.resultItem}>
+                      <span style={styles.resultLabel}>⭐ Match Score:</span>
+                      <span style={styles.resultValue}>
+                        {result.matchScore} keyword(s) matched
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    style={styles.resetButton}
+                    onClick={handleReset}
                   >
-                    Assign
+                    Assign Another Paper
                   </button>
                 </div>
-              ))}
-            </div>
+              </div>
+            )}
           </div>
-        )}
-
-        {result && (
-          <div style={styles.resultCard}>
-            <h3 style={styles.resultTitle}>Assignment Result</h3>
-            <div style={styles.resultRow}>
-              <span style={styles.resultLabel}>Paper:</span>
-              <span style={styles.resultValue}>{result.paperTitle}</span>
-            </div>
-            <div style={styles.resultRow}>
-              <span style={styles.resultLabel}>Assigned Reviewer:</span>
-              <span style={styles.resultValue}>{result.reviewerName}</span>
-            </div>
-            <div style={styles.resultRow}>
-              <span style={styles.resultLabel}>Reviewer Email:</span>
-              <span style={styles.resultValue}>{result.reviewerEmail}</span>
-            </div>
-            <div style={styles.resultRow}>
-              <span style={styles.resultLabel}>Matched Keywords:</span>
-              <span style={styles.resultValue}>
-                {result.matchedKeywords.join(", ")}
-              </span>
-            </div>
-            <div style={styles.resultRow}>
-              <span style={styles.resultLabel}>Match Score:</span>
-              <span style={styles.resultValue}>{result.matchScore} keyword(s) matched</span>
-            </div>
-          </div>
-        )}
-        
-        {result && (
-           <button style={{...styles.button, backgroundColor: '#6c757d', marginTop: '20px'}} onClick={() => {setResult(null); setSelectedPaper("");}}>
-             Assign Another Paper
-           </button>
-        )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-backgroundColor: "#1a73e8",
-    padding: "20px",
+    minHeight: "calc(100vh - 64px)",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-xl) var(--spacing-lg)",
   },
-  card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    transition: "max-width 0.3s ease",
+  content: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+  },
+  header: {
+    marginBottom: "var(--spacing-xl)",
   },
   title: {
-    textAlign: "center",
-    fontSize: "28px",
+    fontSize: "32px",
     fontWeight: "700",
-    color: "#1a73e8",
-    marginBottom: "4px",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-md) 0",
   },
   subtitle: {
-    textAlign: "center",
-    color: "#666",
-    marginBottom: "24px",
     fontSize: "14px",
+    color: "var(--text-secondary)",
+    margin: 0,
   },
-  inputGroup: { marginBottom: "20px" },
+  mainGrid: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1.2fr",
+    gap: "var(--spacing-xl)",
+  },
+  leftPanel: {
+    minHeight: "200px",
+  },
+  rightPanel: {
+    minHeight: "200px",
+  },
+  card: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-light)",
+    padding: "var(--spacing-xl)",
+  },
+  cardTitle: {
+    fontSize: "18px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-lg) 0",
+  },
+  formGroup: {
+    marginBottom: "var(--spacing-lg)",
+  },
   label: {
     display: "block",
-    marginBottom: "6px",
     fontSize: "13px",
-    fontWeight: "500",
-    color: "#333",
+    fontWeight: "600",
+    color: "var(--text-primary)",
+    marginBottom: "var(--spacing-sm)",
   },
   select: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    padding: "var(--spacing-md)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-color)",
     fontSize: "14px",
-    outline: "none",
-    boxSizing: "border-box",
-    backgroundColor: "#fff",
+    color: "var(--text-primary)",
+    backgroundColor: "var(--bg-primary)",
+    fontFamily: "inherit",
   },
   button: {
     width: "100%",
-    padding: "12px",
-    backgroundColor: "#1a73e8",
-    color: "#fff",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
     border: "none",
-    borderRadius: "8px",
+    borderRadius: "var(--radius-lg)",
     fontSize: "15px",
-    fontWeight: "600",
+    fontWeight: "700",
     cursor: "pointer",
-    marginTop: "8px",
+    transition: "all var(--transition-fast)",
   },
-  success: {
-    backgroundColor: "#e6f4ea",
-    color: "#2d7a3a",
-    padding: "10px",
-    borderRadius: "6px",
+  emptyState: {
+    textAlign: "center",
+    padding: "var(--spacing-2xl)",
+  },
+  emptyIcon: {
+    fontSize: "48px",
+    marginBottom: "var(--spacing-md)",
+  },
+  emptyText: {
+    fontSize: "14px",
+    color: "var(--text-secondary)",
+    margin: 0,
+  },
+  matchesSubtitle: {
     fontSize: "13px",
-    marginBottom: "12px",
+    color: "var(--text-secondary)",
+    margin: "0 0 var(--spacing-lg) 0",
   },
-  error: {
-    backgroundColor: "#fce8e6",
-    color: "#c5221f",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
+  matchesContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--spacing-md)",
   },
-  resultCard: {
-    marginTop: "24px",
-    padding: "16px",
-    backgroundColor: "#f8f9fa",
-    borderRadius: "8px",
-    border: "1px solid #e0e0e0",
+  matchCard: {
+    backgroundColor: "var(--bg-secondary)",
+    borderRadius: "var(--radius-md)",
+    padding: "var(--spacing-lg)",
+    border: "1px solid var(--border-light)",
   },
-  resultTitle: {
-    fontSize: "15px",
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: "12px",
-  },
-  resultRow: {
+  matchHeader: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: "8px",
-    fontSize: "13px",
+    alignItems: "flex-start",
+    marginBottom: "var(--spacing-md)",
+    gap: "var(--spacing-lg)",
   },
-  resultLabel: {
-    fontWeight: "500",
-    color: "#555",
-    marginRight: "8px",
+  matchRank: {
+    display: "inline-block",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
+    fontSize: "12px",
+    fontWeight: "700",
+    padding: "2px 8px",
+    borderRadius: "var(--radius-full)",
+    marginBottom: "var(--spacing-sm)",
   },
-  resultValue: {
-    color: "#1a73e8",
-    textAlign: "right",
+  matchName: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-xs) 0",
   },
-  matchesSection: {
-    marginTop: "30px",
+  matchEmail: {
+    fontSize: "12px",
+    color: "var(--text-secondary)",
+    margin: 0,
   },
-  matchesTable: {
-    border: "1px solid #eee",
-    borderRadius: "8px",
-    overflow: "hidden",
+  matchScore: {
+    textAlign: "center",
+    padding: "var(--spacing-md)",
+    borderRadius: "var(--radius-md)",
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
   },
-  tableHeader: {
-    display: "grid",
-    gridTemplateColumns: "1.5fr 2fr 0.8fr 0.8fr",
-    padding: "12px",
-    backgroundColor: "#f1f3f4",
+  matchExpertise: {
+    marginBottom: "var(--spacing-md)",
+  },
+  expertiseLabel: {
+    fontSize: "12px",
+    fontWeight: "600",
+    color: "var(--text-secondary)",
+    display: "block",
+    marginBottom: "var(--spacing-sm)",
+  },
+  expertiseTags: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "var(--spacing-sm)",
+  },
+  expertiseTag: {
+    fontSize: "11px",
+    backgroundColor: "rgba(26, 115, 232, 0.1)",
+    color: "var(--primary-600)",
+    padding: "3px 8px",
+    borderRadius: "var(--radius-full)",
+  },
+  assignButton: {
+    width: "100%",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--success-600)",
+    color: "white",
+    border: "none",
+    borderRadius: "var(--radius-md)",
     fontWeight: "600",
     fontSize: "13px",
-  },
-  tableRow: {
-    display: "grid",
-    gridTemplateColumns: "1.5fr 2fr 0.8fr 0.8fr",
-    padding: "12px",
-    borderTop: "1px solid #eee",
-    alignItems: "center",
-    fontSize: "13px",
-  },
-  reviewerInfo: { display: "flex", flexDirection: "column" },
-  reviewerName: { fontWeight: "600" },
-  reviewerEmail: { fontSize: "11px", color: "#666" },
-  expertiseText: { color: "#555", fontStyle: "italic" },
-  scoreBadge: {
-    backgroundColor: "#e8f0fe",
-    color: "#1a73e8",
-    padding: "4px 8px",
-    borderRadius: "4px",
-    fontSize: "11px",
-    width: "fit-content",
-    fontWeight: "600"
-  },
-  smallAssignButton: {
-padding: "8px 20px",
-    backgroundColor: "#1a73e8",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    fontSize: "13px",
     cursor: "pointer",
+    transition: "all var(--transition-fast)",
+  },
+  resultCard: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "2px solid var(--success-600)",
+    padding: "var(--spacing-xl)",
+    textAlign: "center",
+  },
+  resultIcon: {
+    fontSize: "64px",
+    marginBottom: "var(--spacing-lg)",
+  },
+  resultTitle: {
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-lg) 0",
+  },
+  resultContent: {
+    textAlign: "left",
+    marginBottom: "var(--spacing-xl)",
+    paddingBottom: "var(--spacing-xl)",
+    borderBottom: "1px solid var(--border-light)",
+  },
+  resultItem: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--spacing-sm)",
+    marginBottom: "var(--spacing-lg)",
+  },
+  resultLabel: {
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "var(--text-secondary)",
+  },
+  resultValue: {
+    fontSize: "14px",
+    color: "var(--text-primary)",
+    fontWeight: "600",
+  },
+  matchedKeywords: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "var(--spacing-sm)",
+    marginTop: "var(--spacing-sm)",
+  },
+  keyword: {
+    fontSize: "12px",
+    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    color: "var(--success-600)",
+    padding: "3px 10px",
+    borderRadius: "var(--radius-full)",
+  },
+  resetButton: {
+    width: "100%",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
+    border: "none",
+    borderRadius: "var(--radius-lg)",
+    fontWeight: "700",
+    fontSize: "15px",
+    cursor: "pointer",
+    transition: "all var(--transition-fast)",
   },
 };
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function ReviewerDashboard() {
   const navigate = useNavigate();
@@ -12,100 +13,154 @@ export default function ReviewerDashboard() {
   }, [user.role, navigate]);
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>RevMatch</h2>
-        <p style={styles.subtitle}>Reviewer Dashboard ({user.name})</p>
+    <>
+      <Navbar />
+      <div style={styles.container}>
+        <div style={styles.content}>
+          {/* Header */}
+          <div style={styles.header}>
+            <h1 style={styles.title}>Reviewer Dashboard 👁️</h1>
+            <p style={styles.subtitle}>Manage your review assignments and expertise</p>
+          </div>
 
-        {/* Assigned Papers Section */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Assigned Papers</h3>
-          <p style={styles.sectionDesc}>View your assigned papers for review</p>
-          <button 
-            style={styles.largeButton}
-            onClick={() => navigate("/assigned-papers")}
-          >
-            👁️ View Assigned Papers
-          </button>
-        </div>
+          {/* Cards Grid */}
+          <div style={styles.cardsGrid}>
+            {/* Assigned Papers Card */}
+            <div
+              style={styles.card}
+              onClick={() => navigate("/assigned-papers")}
+            >
+              <div style={{ ...styles.cardIcon, backgroundColor: "#ec494920" }}>
+                <span style={styles.iconText}>📚</span>
+              </div>
+              <h3 style={styles.cardTitle}>Assigned Papers</h3>
+              <p style={styles.cardDescription}>
+                View and review papers assigned to you based on your expertise
+              </p>
+              <div style={styles.cardArrow}>→</div>
+            </div>
 
-        {/* Manage Expertise Section */}
-        <div style={styles.section}>
-          <h3 style={styles.sectionTitle}>Manage Expertise</h3>
-          <p style={styles.sectionDesc}>Update your research keywords to get better matches</p>
-          <button 
-            style={styles.largeButton}
-            onClick={() => navigate("/manage-expertise")}
-          >
-            ✏️ Update Expertise Profile
-          </button>
+            {/* Manage Expertise Card */}
+            <div
+              style={styles.card}
+              onClick={() => navigate("/manage-expertise")}
+            >
+              <div style={{ ...styles.cardIcon, backgroundColor: "#8b5cf620" }}>
+                <span style={styles.iconText}>⭐</span>
+              </div>
+              <h3 style={styles.cardTitle}>Expertise Profile</h3>
+              <p style={styles.cardDescription}>
+                Update your research keywords to improve paper recommendations
+              </p>
+              <div style={styles.cardArrow}>→</div>
+            </div>
+          </div>
+
+          {/* Info Section */}
+          <div style={styles.infoSection}>
+            <h3 style={styles.infoTitle}>💡 Tips for Better Matches</h3>
+            <ul style={styles.infoList}>
+              <li>Keep your expertise keywords up-to-date</li>
+              <li>Review papers in your research area</li>
+              <li>Provide constructive feedback to authors</li>
+              <li>Complete reviews on time to help the process</li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles = {
   container: {
-    minHeight: "100vh",
+    minHeight: "calc(100vh - 64px)",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-xl) var(--spacing-lg)",
+  },
+  content: {
+    maxWidth: "1000px",
+    margin: "0 auto",
+  },
+  header: {
+    marginBottom: "var(--spacing-xl)",
+  },
+  title: {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-md) 0",
+  },
+  subtitle: {
+    fontSize: "14px",
+    color: "var(--text-secondary)",
+    margin: 0,
+  },
+  cardsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "var(--spacing-lg)",
+    marginBottom: "var(--spacing-xl)",
+  },
+  card: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    padding: "var(--spacing-lg)",
+    cursor: "pointer",
+    transition: "all var(--transition-base)",
+    border: "1px solid var(--border-light)",
+    position: "relative",
+    overflow: "hidden",
+  },
+  cardIcon: {
+    width: "64px",
+    height: "64px",
+    borderRadius: "var(--radius-lg)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#1a73e8",
-    padding: "20px",
+    marginBottom: "var(--spacing-lg)",
   },
-  card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: "800px",
+  iconText: {
+    fontSize: "32px",
   },
-  title: {
-    textAlign: "center",
-    fontSize: "28px",
+  cardTitle: {
+    fontSize: "18px",
     fontWeight: "700",
-    color: "#1a73e8",
-    marginBottom: "4px",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-sm) 0",
   },
-  subtitle: {
-    textAlign: "center",
-    color: "#666",
-    marginBottom: "32px",
+  cardDescription: {
     fontSize: "14px",
-  },
-  section: {
-    backgroundColor: "#fff",
-    borderRadius: "12px",
-    padding: "32px",
-    marginBottom: "24px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    textAlign: "center",
-  },
-  sectionTitle: {
-    margin: "0 0 8px 0",
-    fontSize: "22px",
-    fontWeight: "600",
-    color: "#1a73e8",
-  },
-  sectionDesc: {
-    color: "#666",
-    fontSize: "15px",
-    margin: "0 0 24px 0",
+    color: "var(--text-secondary)",
     lineHeight: "1.5",
+    margin: 0,
   },
-  largeButton: {
-    width: "100%",
-    padding: "16px 24px",
-    backgroundColor: "#1a73e8",
-    color: "#fff",
-    border: "none",
-    borderRadius: "12px",
+  cardArrow: {
+    fontSize: "24px",
+    color: "var(--primary-600)",
+    opacity: 0,
+    transition: "opacity var(--transition-fast)",
+    position: "absolute",
+    bottom: "var(--spacing-lg)",
+    right: "var(--spacing-lg)",
+  },
+  infoSection: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    padding: "var(--spacing-lg)",
+    border: "1px solid var(--border-light)",
+    borderLeft: "4px solid var(--info-600)",
+  },
+  infoTitle: {
     fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-    transition: "all 0.2s",
-    boxShadow: "0 4px 12px rgba(26, 115, 232, 0.3)",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-md) 0",
+  },
+  infoList: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
   },
 };

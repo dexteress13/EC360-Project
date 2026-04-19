@@ -1,4 +1,4 @@
-import logo from '../assets/logo.png';
+import logo from '../assets/magnifying-glass-logo.svg';
 
 const styles = {
   headerContainer: {
