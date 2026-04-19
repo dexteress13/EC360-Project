@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Alert from "../components/Alert";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function AdminPaperDetails() {
   const { id } = useParams();
@@ -8,16 +11,16 @@ export default function AdminPaperDetails() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [decisionStatus, setDecisionStatus] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [decidingOn, setDecidingOn] = useState(null);
   const token = localStorage.getItem("token");
-const user = JSON.parse(localStorage.getItem("user") || "{}");
-  if (user.role) user.role = user.role.toLowerCase();
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
 
   useEffect(() => {
-if (user.role !== "editor") {
-  navigate("/dashboard");
-  return;
-}
+    if (user.role?.toLowerCase() !== "editor") {
+      navigate("/dashboard");
+      return;
+    }
     fetchPaper();
   }, [id, token, user.role, navigate]);
 
@@ -29,7 +32,7 @@ if (user.role !== "editor") {
       const data = await res.json();
       if (res.ok && data.success) {
         setPaper(data.paper);
-        setReviews(data.reviews);
+        setReviews(data.reviews || []);
       } else {
         setError(data.message || "Failed to load paper");
       }
@@ -41,6 +44,7 @@ if (user.role !== "editor") {
   };
 
   const makeDecision = async (status) => {
+    setDecidingOn(status);
     try {
       const res = await fetch(`http://localhost:5000/api/paper/${id}/decision`, {
         method: "PUT",
@@ -52,125 +56,510 @@ if (user.role !== "editor") {
       });
       const data = await res.json();
       if (res.ok) {
-        setDecisionStatus(`Paper ${status.toUpperCase()} successfully!`);
+        setSuccessMsg(`Paper ${status.toUpperCase()} successfully!`);
         setTimeout(() => navigate("/admin-dashboard"), 2000);
       } else {
-        setError(data.message);
+        setError(data.message || "Decision failed");
       }
     } catch (err) {
       setError("Decision failed");
+    } finally {
+      setDecidingOn(null);
     }
   };
 
-  if (loading) return <div style={styles.loading}>Loading paper details...</div>;
-  if (error) return <div style={styles.error}>{error}</div>;
-  if (!paper) return <div style={styles.error}>Paper not found</div>;
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <div style={styles.container}>
+          <LoadingSpinner size="lg" label="Loading paper details..." />
+        </div>
+      </>
+    );
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'accepted': return '#28a745';
-      case 'rejected': return '#dc3545';
-      default: return '#17a2b8';
-    }
-  };
-
-  return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Paper Review Details</h2>
-        <div style={styles.paperInfo}>
-          <h3 style={styles.paperTitle}>{paper.title}</h3>
-          <p style={styles.paperAuthor}>Author: {paper.submittedBy?.name} ({paper.submittedBy?.email})</p>
-          <p style={styles.paperAbstract}>
-            <strong>Abstract:</strong> {paper.abstract.substring(0, 300)}...
-          </p>
-          <div style={styles.currentStatus}>
-            Current Status: <span style={{ color: getStatusColor(paper.status) }}>
-              {paper.status.replace('_', ' ').toUpperCase()}
-            </span>
+  if (!paper)
+    return (
+      <>
+        <Navbar />
+        <div style={styles.container}>
+          <div style={styles.errorState}>
+            <div style={styles.errorIcon}>⚠️</div>
+            <h3>Paper Not Found</h3>
+            <button
+              style={styles.backLink}
+              onClick={() => navigate("/admin-dashboard")}
+            >
+              ← Back to Dashboard
+            </button>
           </div>
         </div>
+      </>
+    );
 
-        <div style={styles.reviewsSection}>
-          <h3>Reviewer Feedback ({reviews.length})</h3>
-          {reviews.length === 0 ? (
-            <p style={styles.noReviews}>No reviews yet.</p>
-          ) : (
-            <div style={styles.reviewsList}>
-              {reviews.map((review, idx) => (
-                <div key={idx} style={styles.reviewCard}>
-                  <p><strong>{review.reviewerName}:</strong></p>
-                  <p>{review.review || 'No comments'}</p>
-                  {review.rating && <p>Rating: {review.rating}/5</p>}
-                  {review.submittedAt && <p><small>Submitted: {new Date(review.submittedAt).toLocaleDateString()}</small></p>}
+  const isDecided = paper.status === "accepted" || paper.status === "rejected";
+  const statusColor =
+    paper.status === "accepted"
+      ? "#10b981"
+      : paper.status === "rejected"
+      ? "#ef4444"
+      : "#f59e0b";
+
+  return (
+    <>
+      <Navbar />
+      <div style={styles.container}>
+        <div style={styles.content}>
+          {/* Header */}
+          <div style={styles.header}>
+            <button
+              style={styles.backButton}
+              onClick={() => navigate("/admin-dashboard")}
+            >
+              ← Back
+            </button>
+            <h1 style={styles.title}>📋 Paper Decision</h1>
+          </div>
+
+          {error && (
+            <Alert type="danger" message={error} onClose={() => setError("")} />
+          )}
+          {successMsg && (
+            <Alert
+              type="success"
+              message={successMsg}
+              onClose={() => setSuccessMsg("")}
+            />
+          )}
+
+          {/* Paper Details Card */}
+          <div style={styles.paperCard}>
+            {/* Status Badge */}
+            <div style={styles.statusRow}>
+              <span
+                style={{
+                  ...styles.statusBadge,
+                  backgroundColor: statusColor,
+                }}
+              >
+                {paper.status.replace("_", " ").toUpperCase()}
+              </span>
+            </div>
+
+            {/* Title and Author */}
+            <h2 style={styles.paperTitle}>{paper.title}</h2>
+            <div style={styles.authorSection}>
+              <div style={styles.authorInfo}>
+                <span style={styles.label}>Author:</span>
+                <span style={styles.value}>{paper.submittedBy?.name}</span>
+              </div>
+              <div style={styles.authorInfo}>
+                <span style={styles.label}>Email:</span>
+                <span style={styles.value}>{paper.submittedBy?.email}</span>
+              </div>
+            </div>
+
+            {/* Abstract */}
+            <div style={styles.section}>
+              <h3 style={styles.sectionTitle}>📝 Abstract</h3>
+              <p style={styles.abstract}>{paper.abstract}</p>
+            </div>
+
+            {/* Keywords */}
+            {paper.keywords && (
+              <div style={styles.section}>
+                <h3 style={styles.sectionTitle}>🏷️ Keywords</h3>
+                <div style={styles.keywords}>
+                  {paper.keywords.split(",").map((kw, i) => (
+                    <span key={i} style={styles.keyword}>
+                      {kw.trim()}
+                    </span>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* Download Link */}
+            {paper.filePath && (
+              <div style={styles.section}>
+                <a
+                  href={`http://localhost:5000/${paper.filePath}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={styles.downloadLink}
+                >
+                  📄 Download Full Paper PDF
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* Reviews Section */}
+          <div style={styles.reviewsSection}>
+            <h2 style={styles.sectionTitle}>
+              👥 Reviewer Feedback ({reviews.length})
+            </h2>
+
+            {reviews.length === 0 ? (
+              <div style={styles.emptyReviews}>
+                <span style={styles.emptyIcon}>📭</span>
+                <p>No reviews submitted yet</p>
+              </div>
+            ) : (
+              <div style={styles.reviewsList}>
+                {reviews.map((review, idx) => (
+                  <div key={idx} style={styles.reviewCard}>
+                    <div style={styles.reviewHeader}>
+                      <h4 style={styles.reviewerName}>
+                        {review.reviewerName || "Anonymous Reviewer"}
+                      </h4>
+                      <span
+                        style={{
+                          ...styles.decisionBadge,
+                          backgroundColor:
+                            review.decision === "accept"
+                              ? "#10b981"
+                              : "#ef4444",
+                        }}
+                      >
+                        {review.decision?.toUpperCase() || "NO DECISION"}
+                      </span>
+                    </div>
+
+                    <p style={styles.reviewText}>
+                      {review.review || "No detailed comments provided"}
+                    </p>
+
+                    {review.submittedAt && (
+                      <div style={styles.reviewMeta}>
+                        📅{" "}
+                        {new Date(review.submittedAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Decision Section */}
+          {!isDecided && (
+            <div style={styles.decisionCard}>
+              <h2 style={styles.sectionTitle}>⚖️ Make Final Decision</h2>
+              <p style={styles.decisionSubtitle}>
+                Based on the reviews above, decide the final status of this
+                paper
+              </p>
+
+              <div style={styles.decisionButtons}>
+                <button
+                  style={styles.acceptButton}
+                  onClick={() => makeDecision("accepted")}
+                  disabled={decidingOn !== null}
+                >
+                  {decidingOn === "accepted" ? "Processing..." : "✓ Accept Paper"}
+                </button>
+                <button
+                  style={styles.rejectButton}
+                  onClick={() => makeDecision("rejected")}
+                  disabled={decidingOn !== null}
+                >
+                  {decidingOn === "rejected" ? "Processing..." : "✕ Reject Paper"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {isDecided && (
+            <div style={styles.decidedCard}>
+              <div style={styles.decidedIcon}>✓</div>
+              <p style={styles.decidedText}>
+                Decision already made: <strong>{paper.status.toUpperCase()}</strong>
+              </p>
             </div>
           )}
         </div>
-
-        <div style={styles.decisionSection}>
-          <h3>Make Final Decision</h3>
-          <div style={styles.buttons}>
-            <button 
-              style={styles.acceptBtn}
-              onClick={() => makeDecision('accepted')}
-              disabled={paper.status === 'accepted' || paper.status === 'rejected'}
-            >
-              ✅ Accept Paper
-            </button>
-            <button 
-              style={styles.rejectBtn}
-              onClick={() => makeDecision('rejected')}
-              disabled={paper.status === 'accepted' || paper.status === 'rejected'}
-            >
-              ❌ Reject Paper
-            </button>
-          </div>
-          {decisionStatus && <p style={styles.successMsg}>{decisionStatus}</p>}
-        </div>
-
-        <button style={styles.backBtn} onClick={() => navigate("/admin-dashboard")}>
-          ← Back to Dashboard
-        </button>
       </div>
-    </div>
+    </>
   );
 }
 
 const styles = {
-  container: { minHeight: "100vh", padding: "20px", backgroundColor: "#1a73e8" },
-  card: { maxWidth: "800px", margin: "0 auto", background: "white", borderRadius: "12px", padding: "40px", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" },
-  title: { textAlign: "center", color: "#1a73e8", marginBottom: "32px" },
-  paperInfo: { marginBottom: "32px", paddingBottom: "24px", borderBottom: "1px solid #eee" },
-  paperTitle: { fontSize: "24px", fontWeight: "700", color: "#333", marginBottom: "12px" },
-  paperAuthor: { color: "#666", marginBottom: "12px" },
-  paperAbstract: { lineHeight: "1.6", color: "#555" },
-  currentStatus: { marginTop: "12px", fontSize: "16px", fontWeight: "500" },
-  reviewsSection: { marginBottom: "32px" },
-  reviewsList: { display: "flex", flexDirection: "column", gap: "20px" },
-  reviewCard: { background: "#f8f9fa", padding: "20px", borderRadius: "8px", borderLeft: "4px solid #1a73e8" },
-  decisionSection: { textAlign: "center", padding: "24px", background: "#f8f9fa", borderRadius: "12px" },
-  buttons: { display: "flex", gap: "20px", justifyContent: "center", flexWrap: "wrap", marginTop: "16px" },
-  acceptBtn: { 
-    padding: "14px 28px", background: "#28a745", color: "white", border: "none", 
-    borderRadius: "8px", fontSize: "16px", fontWeight: "600", cursor: "pointer",
-minWidth: "200px"
+  container: {
+    minHeight: "calc(100vh - 64px)",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-xl) var(--spacing-lg)",
   },
-  rejectBtn: { 
-    padding: "14px 36px", background: "#dc3545", color: "white", border: "none", 
-    borderRadius: "8px", fontSize: "16px", fontWeight: "600", cursor: "pointer",
-    minWidth: "200px"
+  content: {
+    maxWidth: "900px",
+    margin: "0 auto",
   },
-  backBtn: { 
-
-    width: "100%", padding: "14px", background: "#6c757d", color: "white", 
-    border: "none", borderRadius: "8px", fontSize: "16px", fontWeight: "600", 
-    cursor: "pointer", marginTop: "24px" 
+  header: {
+    display: "flex",
+    alignItems: "center",
+    gap: "var(--spacing-lg)",
+    marginBottom: "var(--spacing-xl)",
   },
-  successMsg: { color: "#28a745", fontSize: "18px", fontWeight: "600", marginTop: "16px" },
-  loading: { textAlign: "center", padding: "100px", fontSize: "18px", color: "#666" },
-  error: { textAlign: "center", padding: "50px", color: "#dc3545", fontSize: "18px" },
-  noReviews: { textAlign: "center", color: "#999", fontStyle: "italic", padding: "40px" },
+  backButton: {
+    padding: "var(--spacing-md) var(--spacing-lg)",
+    backgroundColor: "var(--bg-primary)",
+    border: "1px solid var(--border-light)",
+    borderRadius: "var(--radius-lg)",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "14px",
+    color: "var(--text-primary)",
+    transition: "all var(--transition-fast)",
+  },
+  title: {
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: 0,
+  },
+  paperCard: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-light)",
+    padding: "var(--spacing-xl)",
+    marginBottom: "var(--spacing-xl)",
+  },
+  statusRow: {
+    marginBottom: "var(--spacing-lg)",
+    display: "flex",
+    alignItems: "center",
+    gap: "var(--spacing-md)",
+  },
+  statusBadge: {
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "white",
+    padding: "6px 16px",
+    borderRadius: "var(--radius-full)",
+  },
+  paperTitle: {
+    fontSize: "24px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-lg) 0",
+  },
+  authorSection: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "var(--spacing-lg)",
+    padding: "var(--spacing-lg)",
+    backgroundColor: "var(--bg-secondary)",
+    borderRadius: "var(--radius-md)",
+    marginBottom: "var(--spacing-lg)",
+  },
+  authorInfo: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--spacing-sm)",
+  },
+  label: {
+    fontSize: "12px",
+    fontWeight: "700",
+    color: "var(--text-secondary)",
+  },
+  value: {
+    fontSize: "14px",
+    color: "var(--text-primary)",
+  },
+  section: {
+    marginBottom: "var(--spacing-xl)",
+    paddingBottom: "var(--spacing-xl)",
+    borderBottom: "1px solid var(--border-light)",
+  },
+  sectionTitle: {
+    fontSize: "16px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "0 0 var(--spacing-lg) 0",
+  },
+  abstract: {
+    fontSize: "14px",
+    lineHeight: "1.8",
+    color: "var(--text-secondary)",
+    margin: 0,
+  },
+  keywords: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "var(--spacing-md)",
+  },
+  keyword: {
+    fontSize: "13px",
+    backgroundColor: "rgba(26, 115, 232, 0.1)",
+    color: "var(--primary-600)",
+    padding: "var(--spacing-sm) var(--spacing-md)",
+    borderRadius: "var(--radius-full)",
+  },
+  downloadLink: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "var(--spacing-sm)",
+    padding: "var(--spacing-md) var(--spacing-lg)",
+    backgroundColor: "rgba(26, 115, 232, 0.1)",
+    color: "var(--primary-600)",
+    textDecoration: "none",
+    borderRadius: "var(--radius-md)",
+    fontWeight: "600",
+    fontSize: "14px",
+    transition: "all var(--transition-fast)",
+  },
+  reviewsSection: {
+    marginBottom: "var(--spacing-xl)",
+  },
+  emptyReviews: {
+    textAlign: "center",
+    padding: "var(--spacing-2xl)",
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-light)",
+  },
+  emptyIcon: {
+    fontSize: "48px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "var(--spacing-md)",
+    lineHeight: "1",
+    height: "48px",
+  },
+  reviewsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "var(--spacing-lg)",
+  },
+  reviewCard: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-light)",
+    padding: "var(--spacing-lg)",
+    borderLeft: "4px solid var(--primary-600)",
+  },
+  reviewHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "var(--spacing-md)",
+    gap: "var(--spacing-lg)",
+  },
+  reviewerName: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: 0,
+  },
+  decisionBadge: {
+    fontSize: "11px",
+    fontWeight: "700",
+    color: "white",
+    padding: "4px 12px",
+    borderRadius: "var(--radius-full)",
+    whiteSpace: "nowrap",
+  },
+  reviewText: {
+    fontSize: "14px",
+    lineHeight: "1.6",
+    color: "var(--text-secondary)",
+    margin: "var(--spacing-md) 0",
+  },
+  reviewMeta: {
+    fontSize: "12px",
+    color: "var(--text-secondary)",
+    marginTop: "var(--spacing-lg)",
+    paddingTop: "var(--spacing-lg)",
+    borderTop: "1px solid var(--border-light)",
+  },
+  decisionCard: {
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "2px solid var(--primary-600)",
+    padding: "var(--spacing-xl)",
+  },
+  decisionSubtitle: {
+    fontSize: "14px",
+    color: "var(--text-secondary)",
+    margin: "0 0 var(--spacing-lg) 0",
+  },
+  decisionButtons: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "var(--spacing-lg)",
+  },
+  acceptButton: {
+    padding: "var(--spacing-md) var(--spacing-lg)",
+    backgroundColor: "var(--success-600)",
+    color: "white",
+    border: "none",
+    borderRadius: "var(--radius-lg)",
+    fontWeight: "700",
+    fontSize: "15px",
+    cursor: "pointer",
+    transition: "all var(--transition-fast)",
+  },
+  rejectButton: {
+    padding: "var(--spacing-md) var(--spacing-lg)",
+    backgroundColor: "var(--danger-600)",
+    color: "white",
+    border: "none",
+    borderRadius: "var(--radius-lg)",
+    fontWeight: "700",
+    fontSize: "15px",
+    cursor: "pointer",
+    transition: "all var(--transition-fast)",
+  },
+  decidedCard: {
+    textAlign: "center",
+    padding: "var(--spacing-2xl)",
+    backgroundColor: "rgba(16, 185, 129, 0.1)",
+    borderRadius: "var(--radius-lg)",
+    border: "2px solid var(--success-600)",
+  },
+  decidedIcon: {
+    fontSize: "48px",
+    marginBottom: "var(--spacing-md)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    lineHeight: "1",
+    height: "48px",
+  },
+  decidedText: {
+    fontSize: "16px",
+    color: "var(--success-600)",
+    fontWeight: "600",
+    margin: 0,
+  },
+  errorState: {
+    textAlign: "center",
+    padding: "var(--spacing-2xl)",
+    backgroundColor: "var(--bg-primary)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-light)",
+  },
+  errorIcon: {
+    fontSize: "64px",
+    marginBottom: "var(--spacing-lg)",
+  },
+  backLink: {
+    marginTop: "var(--spacing-lg)",
+    padding: "var(--spacing-md) var(--spacing-lg)",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
+    border: "none",
+    borderRadius: "var(--radius-lg)",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
 };
 

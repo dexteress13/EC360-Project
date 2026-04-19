@@ -1,6 +1,8 @@
 import { useState } from "react";
-import Header from "../components/Header";
 import { useNavigate, Link } from "react-router-dom";
+import Header from "../components/Header";
+import Alert from "../components/Alert";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -37,7 +39,6 @@ export default function Login() {
       if (!res.ok) {
         setError(data.message);
       } else {
-        // ✅ Role validation
         if (data.user.role !== formData.role) {
           setError("Selected role does not match account");
           setLoading(false);
@@ -60,62 +61,75 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-
         <Header />
 
+        <h1 style={styles.title}>Login to RevMatch</h1>
+        <p style={styles.subtitle}>Enter your credentials to continue</p>
 
-        {message && <p style={styles.success}>{message}</p>}
-        {error && <p style={styles.error}>{error}</p>}
+        {message && <Alert type="success" message={message} />}
+        {error && <Alert type="danger" message={error} onClose={() => setError("")} />}
 
         <form onSubmit={handleSubmit}>
-          <div style={styles.inputGroup}>
-            <label>Email</label>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Email Address</label>
             <input
               style={styles.input}
               type="email"
               name="email"
+              placeholder="your@email.com"
+              value={formData.email}
               onChange={handleChange}
               required
             />
           </div>
 
-          <div style={styles.inputGroup}>
-            <label>Password</label>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Password</label>
             <input
               style={styles.input}
               type="password"
               name="password"
+              placeholder="••••••••"
+              value={formData.password}
               onChange={handleChange}
               required
             />
           </div>
 
-          {/* ✅ NEW ROLE DROPDOWN */}
-          <div style={styles.inputGroup}>
-            <label>Select Role</label>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Your Role</label>
             <select
               style={styles.input}
               name="role"
               value={formData.role}
               onChange={handleChange}
             >
-              <option value="author">Author</option>
-              <option value="editor">Editor</option>
-              <option value="reviewer">Reviewer</option>
+              <option value="author">👨‍🔬 Author</option>
+              <option value="reviewer">👁️ Reviewer</option>
+              <option value="editor">✏️ Editor</option>
             </select>
           </div>
 
-          <button style={styles.button} type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+          <button
+            style={{
+              ...styles.button,
+              opacity: loading ? 0.7 : 1,
+            }}
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? <LoadingSpinner size="sm" /> : "Sign In"}
           </button>
         </form>
 
+        <p style={styles.divider}>Don't have an account?</p>
 
-        <p style={styles.link}>
-          Don't have an account? <Link to="/signup" style={styles.linkText}>Sign up</Link>
-        </p>
-
+        <Link to="/signup" style={styles.signupLink}>
+          Create a new account
+        </Link>
       </div>
+
+      <div style={styles.decorative}></div>
     </div>
   );
 }
@@ -126,86 +140,97 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#1a73e8",
+    backgroundColor: "var(--bg-secondary)",
+    padding: "var(--spacing-lg)",
+    position: "relative",
+  },
+  decorative: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "300px",
+    background: "linear-gradient(135deg, var(--primary-600) 0%, var(--primary-400) 100%)",
+    opacity: 0.05,
+    zIndex: -1,
   },
   card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "12px",
+    backgroundColor: "var(--bg-primary)",
+    padding: "var(--spacing-2xl)",
+    borderRadius: "var(--radius-xl)",
+    boxShadow: "var(--shadow-lg)",
     width: "100%",
     maxWidth: "420px",
+    border: "1px solid var(--border-light)",
   },
-  title: { textAlign: "center" },
-  subtitle: { textAlign: "center", marginBottom: "20px" },
-
-  inputGroup: {
-    marginBottom: "16px",
+  title: {
+    fontSize: "24px",
+    fontWeight: "700",
+    color: "var(--text-primary)",
+    margin: "var(--spacing-lg) 0 var(--spacing-sm) 0",
+    textAlign: "center",
+  },
+  subtitle: {
+    fontSize: "14px",
+    color: "var(--text-secondary)",
+    textAlign: "center",
+    margin: "0 0 var(--spacing-xl) 0",
+  },
+  formGroup: {
+    marginBottom: "var(--spacing-lg)",
   },
   label: {
     display: "block",
-    marginBottom: "6px",
-    fontSize: "13px",
-    fontWeight: "500",
-    color: "#333",
+    marginBottom: "var(--spacing-sm)",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: "var(--text-primary)",
   },
   input: {
     width: "100%",
-    padding: "10px 12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
+    padding: "var(--spacing-md)",
+    borderRadius: "var(--radius-lg)",
+    border: "1px solid var(--border-color)",
     fontSize: "14px",
-    outline: "none",
+    color: "var(--text-primary)",
+    backgroundColor: "var(--bg-primary)",
+    transition: "border-color var(--transition-fast), box-shadow var(--transition-fast)",
     boxSizing: "border-box",
-    transition: "border-color 0.2s, box-shadow 0.2s",
   },
-
-
   button: {
     width: "100%",
-    padding: "12px",
-    backgroundColor: "#1a73e8",
-    color: "#fff",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--primary-600)",
+    color: "white",
     border: "none",
-    borderRadius: "8px",
-    fontSize: "15px",
-    fontWeight: "600",
+    borderRadius: "var(--radius-lg)",
+    fontSize: "16px",
+    fontWeight: "700",
     cursor: "pointer",
-    marginTop: "8px",
-    transition: "background-color 0.2s",
+    marginTop: "var(--spacing-md)",
+    transition: "all var(--transition-fast)",
+    boxShadow: "var(--shadow-md)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
-  ":hover": {
-    backgroundColor: "#1557b0",
-  },
-
-
-  success: {
-    backgroundColor: "#e6f4ea",
-    color: "#2d7a3a",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-  error: {
-    backgroundColor: "#fce8e6",
-    color: "#c5221f",
-    padding: "10px",
-    borderRadius: "6px",
-    fontSize: "13px",
-    marginBottom: "12px",
-  },
-
-
-  link: {
+  divider: {
     textAlign: "center",
-    marginTop: "20px",
-    fontSize: "14px",
-    color: "#666",
+    margin: "var(--spacing-xl) 0 var(--spacing-lg) 0",
+    fontSize: "13px",
+    color: "var(--text-tertiary)",
   },
-  linkText: {
-    color: "#1a73e8",
+  signupLink: {
+    display: "block",
+    textAlign: "center",
+    padding: "var(--spacing-md)",
+    backgroundColor: "var(--bg-secondary)",
+    color: "var(--primary-600)",
     textDecoration: "none",
-    fontWeight: "500",
+    borderRadius: "var(--radius-lg)",
+    fontWeight: "600",
+    fontSize: "14px",
+    transition: "all var(--transition-fast)",
+    border: "1px solid var(--border-color)",
   },
-
 };
