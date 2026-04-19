@@ -106,22 +106,34 @@ export default function AuthorDashboard() {
 }
 
 const styles = {
+
+
   container: {
     minHeight: "100vh",
+
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundAttachment: "fixed",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f0f2f5",
     padding: "20px",
   },
+
+
+
+
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "rgba(255, 255, 255, 0.95)",
+    backdropFilter: "blur(10px)",
     padding: "40px",
     borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+    boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
     width: "100%",
     maxWidth: "1200px",
+    margin: "0 auto",
   },
+
   title: {
     textAlign: "center",
     fontSize: "28px",

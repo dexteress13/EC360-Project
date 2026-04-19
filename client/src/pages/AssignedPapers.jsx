@@ -155,7 +155,7 @@ function PaperCard({ paper, token, submitReview }) {
 }
 
 const styles = {
-  container: { minHeight: '100vh', padding: '20px', background: '#f5f5f5' },
+  container: { minHeight: '100vh', padding: '20px', background: '#1a73e8' },
   card: { maxWidth: '1200px', margin: '0 auto', background: 'white', borderRadius: '12px', padding: '30px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)' },
   title: { textAlign: 'center', color: '#1a73e8', marginBottom: '20px' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(380px, 1fr))', gap: '20px' },
