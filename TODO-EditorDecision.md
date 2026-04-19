@@ -6,7 +6,7 @@ As an Editor, I want to view reviews and make a final decision so that papers ca
 - [ ] Editor sees all reviews
 - [ ] Editor selects final decision 
 - [ ] Status updates to Accepted/Rejected
-- [ ] Author is notified (Status->Accepted/Rejected)
+- [x] Author is notified (Status->Accepted/Rejected)
 
 FR: System shall allow editor to Accept/Reject paper after reviews.
 NFR: Decision update ≤ 2 seconds.

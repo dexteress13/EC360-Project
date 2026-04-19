@@ -96,22 +96,29 @@ if (req.user.role !== 'editor') {
     const paper = await Paper.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+{ returnDocument: 'after' }
     ).populate('submittedBy', 'name email');
 
     if (!paper) {
       return res.status(404).json({ message: 'Paper not found' });
     }
 
+    // Send email notification to author
+    const emailSent = await sendPaperDecisionEmail(paper);
+    console.log(`Email notification ${emailSent ? 'sent' : 'failed'} to author`);
+
     res.json({
       success: true,
-      message: `Paper ${status} successfully`,
-      paper
+      message: `Paper ${status} successfully${emailSent ? ' and author notified' : ''}`,
+      paper,
+      emailSent
     });
   } catch (error) {
     console.error('Decision error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+const { sendPaperDecisionEmail } = require('../utils/sendEmail');
 
 module.exports = router;
