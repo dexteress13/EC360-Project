@@ -4,33 +4,8 @@ const Paper = require('../models/Paper');
 const User = require('../models/User');
 const Assignment = require('../models/Assignment');
 
-// MATCHING ALGORITHM
-function findBestMatch(paperKeywords, reviewers) {
-  let bestMatch = null;
-  let highestScore = 0;
-  let bestMatchedKeywords = [];
-
-  reviewers.forEach((reviewer) => {
-    const matchedKeywords = [];
-
-    paperKeywords.forEach((keyword) => {
-      const found = reviewer.expertise.some(
-        (exp) => exp.toLowerCase() === keyword.toLowerCase()
-      );
-      if (found) matchedKeywords.push(keyword);
-    });
-
-    const score = matchedKeywords.length;
-
-    if (score > highestScore) {
-      highestScore = score;
-      bestMatch = reviewer;
-      bestMatchedKeywords = matchedKeywords;
-    }
-  });
-
-  return { bestMatch, highestScore, bestMatchedKeywords };
-}
+// MATCHING ALGORITHM (moved to utils/matching.js so it can be unit tested)
+const { findBestMatch } = require('../utils/matching');
 
 // GET POTENTIAL MATCHES FOR A PAPER
 router.get('/potential-matches/:paperId', async (req, res) => {

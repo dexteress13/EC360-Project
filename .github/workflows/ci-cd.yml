@@ -1,0 +1,216 @@
+name: CI/CD Pipeline
+
+# Code push -> unit tests + security checks -> build -> S3 artifact -> deploy to EC2 -> verify live site
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Only one deployment at a time, and never cancel one halfway through.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  # ---------------------------------------------------------------- 1. TESTS
+  test:
+    name: 1. Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+
+      - name: Server - install
+        run: npm ci
+        working-directory: server
+
+      - name: Server - unit tests
+        run: npm test
+        working-directory: server
+
+      - name: Client - install
+        run: npm ci
+        working-directory: client
+
+      - name: Client - unit tests
+        run: npm test
+        working-directory: client
+
+  # ------------------------------------------------- 2. SECURITY (DevSecOps)
+  security:
+    name: 2. Dependency vulnerability scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      # Fails the pipeline if a HIGH (client) or CRITICAL (server) vulnerability
+      # exists in a production dependency. The server gate is "critical" for now
+      # because nodemailer needs a major-version upgrade to clear its HIGH findings.
+      - name: Audit client dependencies (high and above)
+        run: npm audit --omit=dev --audit-level=high
+        working-directory: client
+
+      - name: Audit server dependencies (critical)
+        run: npm audit --omit=dev --audit-level=critical
+        working-directory: server
+
+  # ---------------------------------------------------------------- 3. BUILD
+  build:
+    name: 3. Build and package
+    needs: [test, security]
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_name: ${{ steps.pack.outputs.artifact_name }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: npm ci
+        working-directory: client
+
+      - name: Build React app
+        run: npm run build
+        working-directory: client
+
+      - name: Package build into a versioned zip
+        id: pack
+        run: |
+          VERSION=$(node -p "require('./client/package.json').version")
+          NAME="build-v${VERSION}-${GITHUB_RUN_NUMBER}.zip"
+          # version.txt lets us prove which build is live after deployment
+          {
+            echo "version=${VERSION}"
+            echo "build=${NAME}"
+            echo "commit=${GITHUB_SHA}"
+          } > client/dist/version.txt
+          (cd client/dist && zip -qr "../../${NAME}" .)
+          ls -lh "${NAME}"
+          echo "artifact_name=${NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Keep the build as a GitHub artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.pack.outputs.artifact_name }}
+          path: ${{ steps.pack.outputs.artifact_name }}
+          if-no-files-found: error
+
+  # ------------------------------------------------------------ 4. S3 UPLOAD
+  publish:
+    name: 4. Upload build to S3
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact_name }}
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Upload build to S3
+        env:
+          NAME: ${{ needs.build.outputs.artifact_name }}
+          BUCKET: ${{ secrets.S3_BUCKET }}
+        run: |
+          aws s3 cp "${NAME}" "s3://${BUCKET}/builds/${NAME}"
+          # latest.txt is only updated after every earlier stage passed, so it
+          # always points at the latest SUCCESSFUL build.
+          echo "${NAME}" | aws s3 cp - "s3://${BUCKET}/builds/latest.txt"
+          echo "Uploaded s3://${BUCKET}/builds/${NAME}"
+          aws s3 ls "s3://${BUCKET}/builds/"
+
+  # ------------------------------------------------------------- 5. DEPLOY
+  deploy:
+    name: 5. Deploy latest build from S3 to EC2
+    needs: [build, publish]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # The EC2 server pulls latest.txt + the zip from S3 itself (deploy/deploy.sh);
+      # GitHub only tells it to run, through AWS Systems Manager (no SSH keys).
+      - name: Run deploy script on EC2
+        env:
+          BUCKET: ${{ secrets.S3_BUCKET }}
+          INSTANCE_ID: ${{ secrets.EC2_INSTANCE_ID }}
+        run: |
+          {
+            echo "export BUCKET=${BUCKET}"
+            echo "export AWS_REGION=${AWS_REGION}"
+            cat deploy/deploy.sh
+          } | jq -Rs '{commands: split("\n")}' > params.json
+
+          CMD_ID=$(aws ssm send-command \
+            --instance-ids "${INSTANCE_ID}" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy ${{ needs.build.outputs.artifact_name }}" \
+            --parameters file://params.json \
+            --query Command.CommandId --output text)
+          echo "SSM command: ${CMD_ID}"
+
+          sleep 5
+          aws ssm wait command-executed \
+            --command-id "${CMD_ID}" --instance-id "${INSTANCE_ID}" || true
+
+          aws ssm get-command-invocation \
+            --command-id "${CMD_ID}" --instance-id "${INSTANCE_ID}" \
+            --query '[Status,StandardOutputContent,StandardErrorContent]' --output text
+
+          STATUS=$(aws ssm get-command-invocation \
+            --command-id "${CMD_ID}" --instance-id "${INSTANCE_ID}" \
+            --query Status --output text)
+          [ "${STATUS}" = "Success" ] || { echo "Deploy failed: ${STATUS}"; exit 1; }
+
+  # ------------------------------------------------------------- 6. VERIFY
+  verify:
+    name: 6. Verify production
+    needs: [build, deploy]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that the live site serves this exact commit
+        env:
+          URL: ${{ secrets.EC2_PUBLIC_URL }}
+        run: |
+          for i in $(seq 1 12); do
+            BODY=$(curl -fsS "${URL}/version.txt" || true)
+            echo "--- attempt ${i} ---"; echo "${BODY}"
+            if echo "${BODY}" | grep -q "commit=${GITHUB_SHA}"; then
+              echo "Production is running commit ${GITHUB_SHA}"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Production does not serve this commit"; exit 1
